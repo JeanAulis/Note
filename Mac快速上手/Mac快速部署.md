@@ -24,12 +24,6 @@ uname -m
 
 兼容性查询：[Is Apple Silicon Ready](https://isapplesiliconready.com/zh)、[DoesitARM](https://doesitarm.com/)、[Silicon](https://imazing.com/downloads)
 
-> [!CAUTION]
->
-> 安装软件经常遇到的问题，比如无法打开，还有一些关于SIP的。详细解决请看
-
-
-
 ## 应用准备
 
 Homebrew友好界面：[Mac可视化Homebrew界面应用](https://github.com/milanvarady/Applite)(说实话没多少东西可以下载，也不稳定，但是)
@@ -58,6 +52,7 @@ Homebrew友好界面：[Mac可视化Homebrew界面应用](https://github.com/mil
 - [Apifox]()、[Postman]()、[Apipost]()
 - [Docker Desktop](https://www.docker.com/)([镜像](https://docker.fxxk.dedyn.io/)、[汉化](https://github.com/asxez/DockerDesktop-CN))
 - [Notepad--](https://github.com/cxasm/notepad--)（Mac不支持Notepad++）
+- [PixPin](https://pixpin.cn/)：截图软件，你也可以使用[Snipaste](https://www.snipaste.com/)，个人觉得PixPin功能更强大一些
 
 可选：
 

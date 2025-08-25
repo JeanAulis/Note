@@ -81,7 +81,23 @@ brew update && brew upgrade && brew cleanup ; say mission complete
 
 
 
+什么？你也想和我一样可以输入⌘ 、⌥ 、⮐
 
+<img src="./Mac快速使用.assets/image-20250825212115894.png" alt="image-20250825212115894" style="zoom:50%;" />
+
+<img src="./Mac快速使用.assets/image-20250825212527184.png" alt="image-20250825212527184" style="zoom: 50%;" />
+
+<img src="./Mac快速使用.assets/image-20250825212556781.png" alt="image-20250825212556781" style="zoom: 50%;" />
+
+<img src="./Mac快速使用.assets/image-20250825212722421.png" alt="image-20250825212722421" style="zoom:50%;" />
+
+<img src="./Mac快速使用.assets/image-20250825212957710.png" alt="image-20250825212957710" style="zoom:50%;" />
+
+什么？还是太麻烦了？有没有更方便的方法？
+
+有的兄弟，有的，在这里添加自定义短语，输入完之后英文状态下补个空格就会自动转换，中文状态下，打出完整的字母，第一个就是。
+
+<img src="./Mac快速使用.assets/PixPin_2025-08-25_21-32-56.gif" alt="PixPin_2025-08-25_21-32-56" style="zoom:67%;" />
 
 ## Dock Position
 
