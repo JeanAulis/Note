@@ -72,10 +72,22 @@ Homebrew友好界面：[Mac可视化Homebrew界面应用](https://github.com/mil
 - [OBS](https://obsproject.com/)：强大的屏幕录制软件
 - DeepL：翻译软件，你也可以使用有道翻译
 - [IINA](https://iina.io/)：视频播放器（没有PotPlayer,不用找了)
+- [vanilla](https://matthewpalmer.net/vanilla/)(自动隐藏功能收费):Hide menu bar icons on your Mac.Windows上面的隐藏应用图标
+- [Ice](https://github.com/jordanbaird/Ice)：开源免费，自动隐藏，个人觉得比上面的好
+
+
 
 > 如果你想在Mac允许Windows或者Linux的软件，你需要安装虚拟机或者其他工具。
 
 ## 环境搭建
+
+### 安装[Homebrew](https://brew.sh/zh-cn/)
+
+```sh
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+
 
 ### jenv管理jdk
 
@@ -151,7 +163,7 @@ git --version
 
 ```
 
-
+### Note
 
 
 
