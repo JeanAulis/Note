@@ -2,6 +2,8 @@
 
 对于从Windows第一次转入Mac的用户来说，多多少少也有一些不适应，也有一些反人类设计，需要去设置更改。
 
+[toc]
+
 
 
 本项目是[强迫症的 Mac 设置指南](https://github.com/macdao/ocds-guide-to-setting-up-mac)学习而来，此项目仅做简单配置，部分内容是直接复制粘贴的，感谢作者。如果还需要更多更深入设置，请移步[强迫症的 Mac 设置指南](https://github.com/macdao/ocds-guide-to-setting-up-mac)。
@@ -43,11 +45,17 @@ PS：这货会让三指点击失效。
 - [Mac键盘快捷键](https://support.apple.com/zh-cn/102650)
 - [Mac终端中键盘快捷键](https://support.apple.com/zh-cn/guide/terminal/trmlshtcts/mac)
 
+什么？你不想查？有没有更方便的工具？
+
+有的兄弟，有的。[CheatSheet](https://formulae.brew.sh/cask/cheatsheet) 安装好之后，你只需要长按⌘ 即可弹出当前应用快捷键～（当然，不是万能的，不是所有应用都可以，大部分还是可以的）
 
 
-Mac上关闭窗口的快捷键是⌘ + W（只关闭窗口不关闭应用），关闭应用的快捷键为⌘ + Q（很容易误触导致退出应用，而且大部分应用不会有提醒！！如果你需要修改的话另行搜索）
 
-有一个解决方法是[SlowQuitApp](https://github.com/dteoh/SlowQuitApps)，通过延时来解决。但是在我的Mac上没用，自行测试（爱折腾也可以用AppleScript)
+Mac上关闭窗口的快捷键是⌘ + W（只关闭窗口不关闭应用），关闭应用的快捷键为⌘ + Q（一开始可能很容易误触导致退出应用，而且大部分应用不会有提醒！！如果你需要修改的话另行搜索）
+
+有一个解决方法是[SlowQuitApp](https://github.com/dteoh/SlowQuitApps)，通过延时来解决。但是在我的Mac上没用，自行测试（爱折腾也可以用AppleScript自己写代码)
+
+
 
 
 

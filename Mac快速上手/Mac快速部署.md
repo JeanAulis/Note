@@ -36,9 +36,9 @@ Homebrew友好界面：[Mac可视化Homebrew界面应用](https://github.com/mil
 >
 > 个人在使用`EcoPaste`这款，快捷键为 ⌥  + C。（支持中文）
 >
-> **Path Finder**执行找“特殊版”，自带的访达可以用，但是使用起来比较麻烦，也不够便捷，这个是我强烈推荐的软件，必装。
+> **Path Finder**自行找“特殊版”，自带的访达可以用，但是使用起来比较麻烦，也不够便捷，这个是我强烈推荐的软件，必装。
 
-终端工具（此处不提供连接）：WindTerm、 Tabby、Putty、xterm、Windows Terminal + ssh.exe、iterm2、rxvt、Gnome
+终端工具（此处不提供连接）：Warp、WindTerm、 Tabby、Putty、xterm、Windows Terminal + ssh.exe、iterm2、rxvt、Gnome
 
 应用快速下载，相对重要(部分应用的专业旗舰版需要付费登陆使用)：
 
@@ -87,9 +87,13 @@ Homebrew友好界面：[Mac可视化Homebrew界面应用](https://github.com/mil
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
+> [!note]
+>
+> 说实话，除了JDK，Git，Maven，NodeJS这些安装在Mac上，其他的还是建议在Docker上装，
 
+### JDK
 
-### jenv管理jdk
+#### jenv管理jdk
 
 先安装[Jenv](https://www.jenv.be/)（管理JAVA_HOME工具）再下载jdk，方便进行项目管理
 
@@ -155,6 +159,65 @@ git --version
 
 ```
 
+#### Druid
+
+https://github.com/alibaba/druid/
+
+```xml
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>druid-spring-boot-starter</artifactId>
+    <version>1.1.23</version>
+</dependency>
+```
+
+```yaml
+spring:
+  datasource:    
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      #初始化连接池大小
+      initial-size: 5
+      #配置最小连接数
+      min-idle: 5
+      #配置最大连接数
+      max-active: 200
+      #配置连接等待超时时间
+      max-wait: 60000
+      #配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      time-between-eviction-runs-millis: 60000
+      #配置一个连接在池中最小生存的时间，单位是毫秒
+      min-evictable-idle-time-millis: 300000
+      #测试连接
+      validation-query: SELECT 1 FROM DUAL
+      #申请连接的时候检测，建议配置为true，不影响性能，并且保证安全
+      test-while-idle: true
+      #获取连接时执行检测，建议关闭，影响性能
+      test-on-borrow: false
+      #归还连接时执行检测，建议关闭，影响性能
+      test-on-return: false
+      #是否开启PSCache，PSCache对支持游标的数据库性能提升巨大，oracle建议开启，mysql下建议关闭
+      pool-prepared-statements: false
+      #开启poolPreparedStatements后生效
+      max-pool-prepared-statement-per-connection-size: 20
+      #配置扩展插件，常用的插件有=>stat:监控统计  log4j:日志  wall:防御sql注入
+      filters: stat,wall,slf4j
+      #打开mergeSql功能；慢SQL记录
+      connection-properties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
+      #配置DruidStatFilter
+      web-stat-filter:
+        enabled: true
+        url-pattern: "/*"
+        exclusions: "*.js,*.gif,*.jpg,*.bmp,*.png,*.css,*.ico,/druid/*"
+      #配置DruidStatViewServlet
+      stat-view-servlet:
+        url-pattern: "/druid/*"
+        #登录名
+        login-username: root
+        #登录密码
+        login-password: root
+```
+
 
 
 ### MongoDB
@@ -163,11 +226,19 @@ git --version
 
 ```
 
-### Note
+### NodeJS
+
+#### 版本管理工具
+
+##### nvm
 
 
 
+##### n
 
+```
+
+```
 
 
 
