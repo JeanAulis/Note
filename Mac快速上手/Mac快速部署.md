@@ -52,7 +52,7 @@ Homebrew友好界面：[Mac可视化Homebrew界面应用](https://github.com/mil
 - [Apifox]()、[Postman]()、[Apipost]()
 - [Docker Desktop](https://www.docker.com/)([镜像](https://docker.fxxk.dedyn.io/)、[汉化](https://github.com/asxez/DockerDesktop-CN))
 - [Notepad--](https://github.com/cxasm/notepad--)（Mac不支持Notepad++）
-- [PixPin](https://pixpin.cn/)：截图软件，你也可以使用[Snipaste](https://www.snipaste.com/)，个人觉得PixPin功能更强大一些
+- [PixPin](https://pixpin.cn/)：截图软件，你也可以使用[Snipaste](https://www.snipaste.com/) 或者[小旺](https://www.xiaowang.com/)(接入AI的)（难绷，Google搜不出来，全是打广告的，又不给官网链接），个人觉得PixPin功能更舒服一些
 
 可选：
 
@@ -139,11 +139,24 @@ mvn -v
 ### Git
 
 ```sh
+# 请先看下面的Caution，如果你觉得用自带的就可以了就不用再下载了
 brew install git
 
 # 查看版本号
 git --version
 ```
+
+> [!caution]
+>
+> 注意嗷，MacOS会自带一个Git（CLT自带），千万别想着删除哦～
+>
+> 安装后你可以使用`which git`查看当前使用哪个git
+>
+> 使用`where git`可以查看所有git所在目录（也可以用`which -a git`）
+>
+> 你需要把你想要使用的git版本写入`~/.zshrc`也就是`$PATH`，而且必须在CLT的git的PATH前面
+>
+> 最后确认版本即可
 
 ### Redis
 
@@ -157,65 +170,6 @@ git --version
 
 ```sh
 
-```
-
-#### Druid
-
-https://github.com/alibaba/druid/
-
-```xml
-<dependency>
-    <groupId>com.alibaba</groupId>
-    <artifactId>druid-spring-boot-starter</artifactId>
-    <version>1.1.23</version>
-</dependency>
-```
-
-```yaml
-spring:
-  datasource:    
-    type: com.alibaba.druid.pool.DruidDataSource
-    druid:
-      #初始化连接池大小
-      initial-size: 5
-      #配置最小连接数
-      min-idle: 5
-      #配置最大连接数
-      max-active: 200
-      #配置连接等待超时时间
-      max-wait: 60000
-      #配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
-      time-between-eviction-runs-millis: 60000
-      #配置一个连接在池中最小生存的时间，单位是毫秒
-      min-evictable-idle-time-millis: 300000
-      #测试连接
-      validation-query: SELECT 1 FROM DUAL
-      #申请连接的时候检测，建议配置为true，不影响性能，并且保证安全
-      test-while-idle: true
-      #获取连接时执行检测，建议关闭，影响性能
-      test-on-borrow: false
-      #归还连接时执行检测，建议关闭，影响性能
-      test-on-return: false
-      #是否开启PSCache，PSCache对支持游标的数据库性能提升巨大，oracle建议开启，mysql下建议关闭
-      pool-prepared-statements: false
-      #开启poolPreparedStatements后生效
-      max-pool-prepared-statement-per-connection-size: 20
-      #配置扩展插件，常用的插件有=>stat:监控统计  log4j:日志  wall:防御sql注入
-      filters: stat,wall,slf4j
-      #打开mergeSql功能；慢SQL记录
-      connection-properties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
-      #配置DruidStatFilter
-      web-stat-filter:
-        enabled: true
-        url-pattern: "/*"
-        exclusions: "*.js,*.gif,*.jpg,*.bmp,*.png,*.css,*.ico,/druid/*"
-      #配置DruidStatViewServlet
-      stat-view-servlet:
-        url-pattern: "/druid/*"
-        #登录名
-        login-username: root
-        #登录密码
-        login-password: root
 ```
 
 
