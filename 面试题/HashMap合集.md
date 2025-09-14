@@ -282,7 +282,9 @@ Java HashMap 的 key 和 value 都可以为 null。其中，key 只允许一个 
 
 ## 说一下hashset的底层原理
 
+HashSet底层是基于HashMap实现的，它只使用了HashMap的key，而value则是一个无意义的Object
 
+向HashSet添加一个元素的时候，底层调用了HashMap的`put(E, V)`方法，将这个元素作为Key，还有一个默认的`PRESENT`作为Value存入。由于HashMap的键是唯一的，所以HashSet的元素是不可重复的
 
 
 
@@ -290,7 +292,15 @@ Java HashMap 的 key 和 value 都可以为 null。其中，key 只允许一个 
 
 ## 说一下ConcurrentHashmap的底层原理
 
+JDK1.8之前：
 
+`ConcurrentHashMap` 采用了**分段锁（Segment）** 的思想。整个 `ConcurrentHashMap` 被分成多个 `Segment`，每个 `Segment` 都是一个独立的 `HashMap`，并带有自己的 `ReentrantLock`。当一个线程修改某个 `Segment` 时，只需要对该 `Segment` 加锁，而其他线程可以自由地访问或修改其他 `Segment`，从而实现了高并发。默认情况下，它有 16 个 `Segment`。
+
+JDK1.8之后：
+
+放弃了分段锁的思想，使用CAS + synchronized的结合，读不加锁，只有在并发写得操作会加锁。
+
+在空桶初始化的时候会使用CAS，
 
 
 
@@ -298,49 +308,57 @@ Java HashMap 的 key 和 value 都可以为 null。其中，key 只允许一个 
 
 ## ConcurrentHashmap和Hashtable的区别
 
+Hashtable几乎所有方法都使用synchronized修饰，也就是全局锁，在并发线程中会阻塞其他线程
 
-
-
+ConcurrentHashmap在JDK1.8之前是使用分段锁，JDK1.8后使用CAS + synchronized实现了更细的锁控制，也就是局部锁，高并发的场景性能远超hashtable
 
 
 
 ## 说一下Arraylist和Linkedlist的区别?
 
+从数据结构来说，Arraylist是基于动态数组来实现的，而Linkedlist是基于双向链表来实现的；
+
+Arraylist对于数据的查询的时间复杂度是O(1)，因为他们是在内存中连续存储的，插入、删除操作慢，因为需要移动元素；Linkedlist对于查询头部和尾部是极快的，其他地方时间复杂度是O(n)，需要遍历链表查询，但是对于插入、删除操作比Arraylist快，只需要改变需要操作数据的指针，不需要移动元素；
+
+扩容方面
+
+占的内存
+
+链表查找会先进行一次二分查找，只有一次，因为一次的话有首尾节点，再次二分的话就没有中间的指针了
 
 
 
 
 
+## new Arraylist()数组初始长度是多少，说一下Arraylist的扩容机制
 
+new Arraylist()的初始容量是0，当第一次添加元素的时候会进行扩容至10
 
-
-## new Arraylist()数组初始长度是多少
-
-
-
-
+当容量不足以容纳新元素的时候才会进行扩容，扩容一般是当前容量的1.5倍，先创建一个新的数组，大小为扩容后的容量，再将旧的数组复制到新数组，最后Arraylist内部引用指向新数组
 
 
 
 ## Arraylist和Linkedlist是线程安全的吗？要线程安全怎么办
 
+他们都是非线程安全的
 
+使用 **`CopyOnWriteArrayList`**，它是一个线程安全的 `List` 实现，写入时会复制一个新的数组，适合读多写少的场景。
 
-
-
-
-
-## 说一下Arraylist的扩容机制
-
-
-
-
+vector
 
 ## 能不能一边循环一边执行删除list的数据？
 
+在forEachh和普通for循环删除List集合是不安全的，会导致`ConcurrentModificationException`异常
 
+建议使用倒序for循环或者迭代器进行删除
 
 
 
 ## 如何实现list和数组的互转
 
+list转数组：
+list.toArray，为了类型安全和性能，更推荐使用 `list.toArray(new String[0])`。
+
+数组转list：
+Arrays.asList()：`Arrays.asList()` 返回的 `List` 是一个**固定大小的**，不支持添加或删除操作。
+使用stream流的collect

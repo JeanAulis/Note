@@ -4,8 +4,11 @@
 - [ ] Spring自动装配原理
 - [ ] 双token三认证
 - [ ] Mysql公共表达式CTE
-- [ ] Lamda表达式
+- [ ] Lambda表达式
 - [ ] 线程安全
+- [ ] 匿名内部类
+- [ ] 工厂
+- [ ] resultMap、resultType
 
 
 
