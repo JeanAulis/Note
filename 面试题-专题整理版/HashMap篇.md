@@ -1,6 +1,10 @@
-# HashMap合集
+[toc]
 
-## 你项目中常用哪些集合?
+---
+
+# part 1
+
+## 1. 你项目中常用哪些集合?
 
 `ArrayList`：适合需要快速随机访问（通过索引）和动态调整大小的场景，如存储有序数据列表
 `HashMap`：适合需要快速查找键值对的场景，如缓存、配置映射。
@@ -11,7 +15,7 @@
 
 
 
-## 说一下list、set和map的区别
+## 2. 说一下list、set和map的区别
 
 List系列：有序，可重复，通过索引访问，底层是基于数组和链表来实现的，适合顺序存储
 
@@ -26,7 +30,7 @@ Map系列：无序，键唯一，键找值，基于哈希表和红黑树实现�
 
 
 
-## 说一下hashmap的底层原理
+## 3. 说一下hashmap的底层原理
 
 ### 从基本数据结构的角度来说：
 
@@ -40,19 +44,18 @@ HashMap是一种基于哈希表的数据结构，用来存储键值对（Key-Val
 
 > ```java
 > static final int hash(Object key) {
->     int h;
->     return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
+>  int h;
+>  return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
 > }
 > ```
 >
 > 1. 获取原始的哈希值，调用`key.hashCode()`，得到一个32位整数h
 > 2. 将这个整数右移16位，位运算，从高16位移到低16位，低16位补0
 > 3. 按位异或：将原始哈希值h和右移的值进行异或运算，即相同为0，不同为1，融合了高低位的特征 
->
 
->  [!tip]
+>  [!tip] 
 >
-> 为什么是右移16位？为什么需要扰动函数？
+>  为什么是右移16位？为什么需要扰动函数？
 
 
 
@@ -89,17 +92,17 @@ HashMap是一种基于哈希表的数据结构，用来存储键值对（Key-Val
 **键不可变**：键需 immutable（如 String），否则 hashCode 变化导致查找失败。
 **权衡**：适合随机访问；若键分布不均，性能可能退化；有序需求用 LinkedHashMap。
 
-![image-20250907225009499](./HashMap合集.assets/image-20250907225009499.png)
+<img src="./assets/image-20250907225009499.png" alt="image-20250907225009499" />
 
-> [!tip]
+> [!tip] 
 >
 > “HashMap 是基于哈希表的键值对存储结构，底层是一个数组，每个元素（桶）存储单节点或链表。插入时，通过键的 hashCode 和扰动函数计算索引，若冲突则用链表或红黑树（链表长于 8 时转换）存储。查找和删除类似，通过索引定位后遍历链表或树。扩容发生在元素数超过容量 * 负载因子（0.75）时，数组翻倍并重新分配数据。HashMap 非线程安全，适合快速查找场景，如需线程安全可使用 ConcurrentHashMap。”
 
-## hashmap的key和value可以为空吗，如果可以允许key为null，那么null的这个元素是存在哪个桶？
+## 4. hashmap的key和value可以为空吗，如果可以允许key为null，那么null的这个元素是存在哪个桶？
 
 Java HashMap 的 key 和 value 都可以为 null。其中，key 只允许一个 null（因为 null 被视为一个唯一的键），而 value 可以有多个 null。 如果将 null 作为 key 插入 HashMap 时，不会调用 hashCode() 方法，而是直接将它放置在桶索引为 0 的位置（bucket 0）。
 
-> [!tip]
+> [!tip] 
 >
 > 为什么key可以为空？
 >
@@ -109,13 +112,13 @@ Java HashMap 的 key 和 value 都可以为 null。其中，key 只允许一个 
 
 
 
-## hashmap是线程安全的吗,那想要线程安全怎么办？
+## 5. hashmap是线程安全的吗,那想要线程安全怎么办？
 
 不是线程安全的。
 
 有四种方法。第一种是手动加锁，使用ReentrantLock，调用lock()方法（要记得释放锁unlock()）;
 
-> [!tip]
+> [!tip] 
 >
 > 也可以使用synchronized锁，引出synchronized和ReentrantLock的区别
 
@@ -127,7 +130,7 @@ Java HashMap 的 key 和 value 都可以为 null。其中，key 只允许一个 
 
 更推荐使用`ConcurrentHashMap`或者手动加锁
 
-> [!tip]
+>  [!tip]
 >
 > | 特性   | Hashtable                       | Collections.synchronizedMap    |
 > | ------ | :------------------------------ | ------------------------------ |
@@ -138,13 +141,13 @@ Java HashMap 的 key 和 value 都可以为 null。其中，key 只允许一个 
 
 
 
-## hashmap的时间复杂度是多少
+## 6. hashmap的时间复杂度是多少
 
 理想情况下要查找的元素在桶的第一位时查找的时间复杂度是O(1)，如果在链表中就是O(n)，当链表过长转化为红黑树的时候，时间复杂度优化为O(log n)
 
 
 
-## 说一下hashmap的扩容机制
+## 7. 说一下hashmap的扩容机制
 
 默认的容量为16，扩容因子为0.75。
 
@@ -152,25 +155,25 @@ Java HashMap 的 key 和 value 都可以为 null。其中，key 只允许一个 
 
 
 
-## hashmap是有序的吗？什么map是有序的
+## 8. hashmap是有序的吗？什么map是有序的
 
 
 
 
 
-## new Hashmap()初始底层数组长度是多少
+## 9. new Hashmap()初始底层数组长度是多少
 
 
 
 
 
-## new Hashmap(14)初始数组长度是多少
+## 10. new Hashmap(14)初始数组长度是多少
 
 
 
 
 
-## 为什么扩容是2倍
+## 11. 为什么扩容是2倍
 
 
 
@@ -178,7 +181,7 @@ Java HashMap 的 key 和 value 都可以为 null。其中，key 只允许一个 
 
 
 
-## 为什么扩容因子是0.75
+## 12. 为什么扩容因子是0.75
 
 
 
@@ -186,19 +189,19 @@ Java HashMap 的 key 和 value 都可以为 null。其中，key 只允许一个 
 
 
 
-## 什么时候链表会转成红黑树
+## 13. 什么时候链表会转成红黑树
 
 
 
 
 
-## 什么时候红黑树会转成链表
+## 14. 什么时候红黑树会转成链表
 
 
 
 
 
-## 为什么是6和8
+## 15. 为什么是6和8
 
 
 
@@ -206,13 +209,13 @@ Java HashMap 的 key 和 value 都可以为 null。其中，key 只允许一个 
 
 
 
-## 当数组长度少于64，链表长度大于8会怎么样
+## 16. 当数组长度少于64，链表长度大于8会怎么样
 
 
 
 
 
-## hashmap对key计算落到哪个桶是用取模运算吗？
+## 17. hashmap对key计算落到哪个桶是用取模运算吗？
 
 
 
@@ -220,7 +223,7 @@ Java HashMap 的 key 和 value 都可以为 null。其中，key 只允许一个 
 
 
 
-## 为什么要用红黑树？只用链表不行吗？要用树那为什么不是二叉树、平衡二叉树？
+## 18. 为什么要用红黑树？只用链表不行吗？要用树那为什么不是二叉树、平衡二叉树？
 
 
 
@@ -228,7 +231,7 @@ Java HashMap 的 key 和 value 都可以为 null。其中，key 只允许一个 
 
 
 
-## hashmap能直接做缓存吗？有没有不足的地方？
+## 19. hashmap能直接做缓存吗？有没有不足的地方？
 
 
 
@@ -240,19 +243,19 @@ Java HashMap 的 key 和 value 都可以为 null。其中，key 只允许一个 
 
 
 
-## hashmap能根据value查询key吗？
+## 20. hashmap能根据value查询key吗？
 
 
 
 
 
-## hashmap能缩容吗
+## 21. hashmap能缩容吗
 
 
 
 
 
-## hashmap什么时候会导致死循环？那怎么解决？
+## 22. hashmap什么时候会导致死循环？那怎么解决？
 
 
 
@@ -260,7 +263,7 @@ Java HashMap 的 key 和 value 都可以为 null。其中，key 只允许一个 
 
 
 
-## 为什么hashmap需要重写key的hashcode和equals方法？
+## 23. 为什么hashmap需要重写key的hashcode和equals方法？
 
 
 
@@ -268,7 +271,7 @@ Java HashMap 的 key 和 value 都可以为 null。其中，key 只允许一个 
 
 
 
-## 你知道linkedhashmap吗？你知道它可以做什么吗
+## 24. 你知道linkedhashmap吗？你知道它可以做什么吗
 
 
 
@@ -280,7 +283,7 @@ Java HashMap 的 key 和 value 都可以为 null。其中，key 只允许一个 
 
 
 
-## 说一下hashset的底层原理
+## 25. 说一下hashset的底层原理
 
 HashSet底层是基于HashMap实现的，它只使用了HashMap的key，而value则是一个无意义的Object
 
@@ -290,7 +293,7 @@ HashSet底层是基于HashMap实现的，它只使用了HashMap的key，而value
 
 
 
-## 说一下ConcurrentHashmap的底层原理
+## 26. 说一下ConcurrentHashmap的底层原理
 
 JDK1.8之前：
 
@@ -306,7 +309,7 @@ JDK1.8之后：
 
 
 
-## ConcurrentHashmap和Hashtable的区别
+## 27. ConcurrentHashmap和Hashtable的区别
 
 Hashtable几乎所有方法都使用synchronized修饰，也就是全局锁，在并发线程中会阻塞其他线程
 
@@ -314,7 +317,7 @@ ConcurrentHashmap在JDK1.8之前是使用分段锁，JDK1.8后使用CAS + synchr
 
 
 
-## 说一下Arraylist和Linkedlist的区别?
+## 28. 说一下Arraylist和Linkedlist的区别?
 
 从数据结构来说，Arraylist是基于动态数组来实现的，而Linkedlist是基于双向链表来实现的；
 
@@ -330,7 +333,7 @@ Arraylist对于数据的查询的时间复杂度是O(1)，因为他们是在内�
 
 
 
-## new Arraylist()数组初始长度是多少，说一下Arraylist的扩容机制
+## 29. new Arraylist()数组初始长度是多少，说一下Arraylist的扩容机制
 
 new Arraylist()的初始容量是0，当第一次添加元素的时候会进行扩容至10
 
@@ -338,7 +341,7 @@ new Arraylist()的初始容量是0，当第一次添加元素的时候会进行�
 
 
 
-## Arraylist和Linkedlist是线程安全的吗？要线程安全怎么办
+## 30. Arraylist和Linkedlist是线程安全的吗？要线程安全怎么办
 
 他们都是非线程安全的
 
@@ -346,7 +349,7 @@ new Arraylist()的初始容量是0，当第一次添加元素的时候会进行�
 
 vector
 
-## 能不能一边循环一边执行删除list的数据？
+## 31. 能不能一边循环一边执行删除list的数据？
 
 在forEachh和普通for循环删除List集合是不安全的，会导致`ConcurrentModificationException`异常
 
@@ -354,7 +357,7 @@ vector
 
 
 
-## 如何实现list和数组的互转
+## 32. 如何实现list和数组的互转
 
 list转数组：
 list.toArray，为了类型安全和性能，更推荐使用 `list.toArray(new String[0])`。
