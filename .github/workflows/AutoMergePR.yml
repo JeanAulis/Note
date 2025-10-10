@@ -108,6 +108,7 @@ jobs:
   merge-prs:
     needs: prepare-prs
     runs-on: ubuntu-latest
+    if: needs.prepare-prs.outputs.pr_numbers != '[]'  # 避免空矩阵错误
     strategy:
       matrix:
         pr_number: ${{ fromJSON(needs.prepare-prs.outputs.pr_numbers) }}
