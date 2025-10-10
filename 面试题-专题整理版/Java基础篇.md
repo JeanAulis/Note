@@ -243,3 +243,19 @@ Apache Commons Lang 提供了 `SerializationUtils.clone()` 方法，内部也是
 
 - 序列化/反序列化性能一般。
 - 丢失 transient 字段或类型信息（复杂泛型不建议）。
+
+
+
+ ## 15.  stream流你熟悉吗？说一下常用的api？
+
+熟悉。常用的一些api有map()对一些对象进行映射，collect()收集Stream流，filter对一些元素进行过滤，sorted()排序，distinct()去重，forEach()遍历循环元素，limit()取前几个元素，skip()跳过前几个元素，count()统计个数，还有最大值最小值max()、min()。大概这些常用的api。
+
+- map()对一些对象的属性做映射
+- filter()：按条件过滤元素
+- distinct()：去重（依赖 `hashCode` 和 `equals`  => 引出重写`hashCode`和`equals`方法）
+- limit(n)：截取前n个
+- skip(n)：跳过前n个
+- collect()：收集stream流
+- forEach()：循环遍历元素
+- sorted()：排序
+- count()、max()、min()
