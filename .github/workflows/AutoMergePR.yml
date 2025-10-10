@@ -1,4 +1,4 @@
-name: Auto-Merge to Main (Full Features, Logging)
+name: Auto-Merge to Main
 
 on:
   pull_request:
