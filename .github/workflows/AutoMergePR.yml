@@ -1,4 +1,4 @@
-name: Auto-Merge to Main
+name: Auto-Merge to Main (Full Features, Logging)
 
 on:
   pull_request:
@@ -50,7 +50,7 @@ jobs:
           echo "=========================================="
           echo ""
 
-          echo "$ALL_PRS" | jq -c '.[]' | while read PR; do
+          while read PR; do
             PR_NUMBER=$(echo "$PR" | jq -r '.number')
             PR_CREATED_AT=$(echo "$PR" | jq -r '.createdAt')
             PR_AUTHOR=$(echo "$PR" | jq -r '.author.login')
@@ -115,7 +115,7 @@ jobs:
             PR_NUMS+=("$PR_NUMBER")
             echo "🔍 DEBUG: PR #$PR_NUMBER 符合合并条件 ✅"
             LOG_ENTRIES+=("$LOG_MSG 符合合并条件，将被处理")
-          done
+          done < <(echo "$ALL_PRS" | jq -c '.[]')
 
           # 打印符合条件的 PR
           echo ""
