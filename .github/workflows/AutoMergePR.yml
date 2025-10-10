@@ -34,6 +34,7 @@ jobs:
 
           PR_NUMS=()
           LOG_ENTRIES=()
+          SKIPPED_PRS=()
 
           gh pr list --state open --json number,createdAt,author,labels,baseRefName | jq -c '.[]' | while read PR; do
             PR_NUMBER=$(echo "$PR" | jq -r '.number')
@@ -47,6 +48,7 @@ jobs:
             # 只处理目标分支 main
             if [ "$PR_BASE" != "main" ]; then
               LOG_ENTRIES+=("$LOG_MSG 目标分支不是 main，跳过")
+              SKIPPED_PRS+=("- PR #$PR_NUMBER: 目标分支不是 main")
               continue
             fi
 
@@ -56,6 +58,7 @@ jobs:
               DELTA=$((NOW_TS - PR_TS))
               if [ $DELTA -lt 86400 ]; then
                 LOG_ENTRIES+=("$LOG_MSG 未超过 24 小时，跳过")
+                SKIPPED_PRS+=("- PR #$PR_NUMBER: 未超过 24 小时")
                 continue
               fi
             else
@@ -65,6 +68,7 @@ jobs:
             # 检查 Auto-merge 标签
             if ! echo "$PR_LABELS" | grep -q "Auto-merge"; then
               LOG_ENTRIES+=("$LOG_MSG 不包含 Auto-merge 标签，跳过")
+              SKIPPED_PRS+=("- PR #$PR_NUMBER: 不包含 Auto-merge 标签")
               continue
             fi
 
@@ -77,6 +81,7 @@ jobs:
               LOG_ENTRIES+=("$LOG_MSG 已批准")
             else
               LOG_ENTRIES+=("$LOG_MSG 未批准，跳过合并")
+              SKIPPED_PRS+=("- PR #$PR_NUMBER: 未批准")
               continue
             fi
 
@@ -93,6 +98,18 @@ jobs:
             for pr in "${PR_NUMS[@]}"; do
               echo "- PR #$pr"
               LOG_ENTRIES+=("符合条件的 PR: #$pr")
+            done
+          fi
+
+          # 打印不符合条件的 PR 及其原因
+          echo "不符合条件的 PR 及其原因:"
+          if [ ${#SKIPPED_PRS[@]} -eq 0 ]; then
+            echo "无被过滤的 PR"
+            LOG_ENTRIES+=("无被过滤的 PR")
+          else
+            for skipped in "${SKIPPED_PRS[@]}"; do
+              echo "$skipped"
+              LOG_ENTRIES+=("$skipped")
             done
           fi
 
