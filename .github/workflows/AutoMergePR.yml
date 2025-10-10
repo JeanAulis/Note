@@ -80,8 +80,15 @@ jobs:
             PR_NUMS+=("$PR_NUMBER")
           done
 
-          # 输出 PR 列表
-          echo "pr_numbers=${PR_NUMS[*]}" >> $GITHUB_OUTPUT
+          # 输出 PR 列表为 JSON
+          if [ ${#PR_NUMS[@]} -eq 0 ]; then
+            echo "pr_numbers=[]" >> $GITHUB_OUTPUT
+          else
+            PR_JSON=$(printf '%s\n' "${PR_NUMS[@]}" | jq -R . | jq -s .)
+            echo "pr_numbers=$PR_JSON" >> $GITHUB_OUTPUT
+          fi
+
+
 
           # 生成日志文件
           LOG_FILE="pr_merge_log.md"
@@ -149,7 +156,7 @@ jobs:
           fi
 
       - name: 上传合并日志
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: pr-merge-log
           path: pr_merge_log.md
