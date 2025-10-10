@@ -6,3 +6,11 @@ Jenkins配置多个仓库地址：
 
 下载完后在这里添加多个仓库地址：
 <img src="./assets/image-20251010115815126.png" alt="image-20251010115815126" style="zoom:67%;" />
+
+
+
+远程部署
+
+<img src="./assets/image-20251010151510479.png" alt="image-20251010151510479" style="zoom:80%;" />
+
+![image-20251010151610271](./assets/image-20251010151610271.png)
