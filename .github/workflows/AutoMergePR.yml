@@ -14,20 +14,10 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v4
 
-      - name: 安装依赖
-        run: sudo apt-get update && sudo apt-get install -y jq curl
-
-      - name: 安装 GitHub CLI
-        run: |
-          curl -sSL https://github.com/cli/cli/releases/download/v2.11.0/gh_2.11.0_linux_amd64.deb -o gh.deb
-          sudo dpkg -i gh.deb
-          sudo apt-get install -f
-
-      - name: 登录 GitHub CLI
-        run: gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
-
       - name: 获取符合条件的 PR
         id: get_prs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           REPO_OWNER=$(gh repo view ${{ github.repository }} --json owner -q ".owner.login")
 
@@ -211,44 +201,56 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v4
 
-      - name: 安装 GitHub CLI
-        run: |
-          curl -sSL https://github.com/cli/cli/releases/download/v2.11.0/gh_2.11.0_linux_amd64.deb -o gh.deb
-          sudo dpkg -i gh.deb
-          sudo apt-get install -f
-
-      - name: 登录 GitHub CLI
-        run: gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
-
       - name: 自动合并 PR（带重试日志）
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           PR_NUMBER=${{ matrix.pr_number }}
           MAX_RETRIES=3
-          RETRY_INTERVAL=3600  # 1小时
-          LOG_FILE="pr_merge_log_${PR_NUMBER}.md"  # 避免日志覆盖
+          RETRY_INTERVAL=10  # 10秒，更合理的重试间隔
+          LOG_FILE="pr_merge_log_${PR_NUMBER}.md"
 
           COUNT=0
           SUCCESS=false
+          
+          echo "# PR #$PR_NUMBER 合并日志" > $LOG_FILE
+          echo "" >> $LOG_FILE
+          
           while [ $COUNT -lt $MAX_RETRIES ]; do
             ATTEMPT_TIME=$(date "+%Y-%m-%d %H:%M:%S")
-            echo "[$ATTEMPT_TIME] 尝试第 $((COUNT+1)) 次合并 PR #$PR_NUMBER..."
-            if gh pr merge $PR_NUMBER --merge --auto --delete-branch; then
-              echo "[$ATTEMPT_TIME] PR #$PR_NUMBER 合并成功"
-              echo "- [$ATTEMPT_TIME] PR #$PR_NUMBER 合并成功 ✅" >> $LOG_FILE
+            echo "[$ATTEMPT_TIME] 尝试第 $((COUNT+1))/$MAX_RETRIES 次合并 PR #$PR_NUMBER..."
+            echo "- [$ATTEMPT_TIME] 尝试第 $((COUNT+1))/$MAX_RETRIES 次合并" >> $LOG_FILE
+            
+            # 移除 --auto 参数，直接合并
+            if gh pr merge $PR_NUMBER --merge --delete-branch; then
+              echo "[$ATTEMPT_TIME] ✅ PR #$PR_NUMBER 合并成功"
+              echo "- [$ATTEMPT_TIME] ✅ 合并成功" >> $LOG_FILE
               SUCCESS=true
               break
             else
-              echo "[$ATTEMPT_TIME] PR #$PR_NUMBER 合并失败，等待 $RETRY_INTERVAL 秒后重试..."
-              echo "- [$ATTEMPT_TIME] PR #$PR_NUMBER 合并失败 ❌" >> $LOG_FILE
+              MERGE_ERROR=$?
+              echo "[$ATTEMPT_TIME] ❌ PR #$PR_NUMBER 合并失败 (错误码: $MERGE_ERROR)"
+              echo "- [$ATTEMPT_TIME] ❌ 合并失败 (错误码: $MERGE_ERROR)" >> $LOG_FILE
               COUNT=$((COUNT+1))
-              sleep $RETRY_INTERVAL
+              
+              if [ $COUNT -lt $MAX_RETRIES ]; then
+                echo "[$ATTEMPT_TIME] 等待 $RETRY_INTERVAL 秒后重试..."
+                echo "- [$ATTEMPT_TIME] 等待 $RETRY_INTERVAL 秒后重试..." >> $LOG_FILE
+                sleep $RETRY_INTERVAL
+              fi
             fi
           done
 
           if [ "$SUCCESS" = false ]; then
-            echo "PR #$PR_NUMBER 合并失败,达到最大重试次数 $MAX_RETRIES"
-            echo "- PR #$PR_NUMBER 合并失败,达到最大重试次数 ❌" >> $LOG_FILE
+            echo "❌ PR #$PR_NUMBER 合并失败，已达到最大重试次数 $MAX_RETRIES"
+            echo "" >> $LOG_FILE
+            echo "## 最终结果" >> $LOG_FILE
+            echo "❌ 合并失败，已达到最大重试次数" >> $LOG_FILE
             exit 1
+          else
+            echo "" >> $LOG_FILE
+            echo "## 最终结果" >> $LOG_FILE
+            echo "✅ 合并成功" >> $LOG_FILE
           fi
 
       - name: 上传合并日志
