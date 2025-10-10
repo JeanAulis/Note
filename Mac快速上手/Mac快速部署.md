@@ -10,19 +10,14 @@
 
 ## 写在最前
 
-- 不要装360
-- 不要装杀毒软件
-
-> 大部分情况下这些杀毒软件对你的开发会存在影响，特别是你需要“特殊版”的软件
-
 下载前请确认你的架构和芯片再下载
 
 ```sh
-# 查看Mac架构是amd还是arm，否则无法安装
+# 查看Mac架构是amd还是arm，否则存在兼容性问题
 uname -m
 ```
 
-兼容性查询：[Is Apple Silicon Ready](https://isapplesiliconready.com/zh)、[DoesitARM](https://doesitarm.com/)、[Silicon](https://imazing.com/downloads)
+应用兼容性查询：[Is Apple Silicon Ready](https://isapplesiliconready.com/zh)、[DoesitARM](https://doesitarm.com/)、[Silicon](https://imazing.com/downloads)
 
 ## 应用准备
 
@@ -30,7 +25,7 @@ Homebrew友好界面：[Mac可视化Homebrew界面应用](https://github.com/mil
 
 > [!NOTE]
 >
-> 非常建议先下载剪切板还有Path Finder！！！！
+> ~~非常建议先下载剪切板还有Path Finder！！！！~~macOS Tahoe 26.0.1自带剪切板，已经习惯了第三方了，如果你不想安装跳过这步即可
 >
 > 剪切板：[EcoPaste](https://github.com/EcoPasteHub/EcoPaste)、[SyncClipboard](https://github.com/Jeric-X/SyncClipboard)
 >
@@ -46,23 +41,23 @@ Homebrew友好界面：[Mac可视化Homebrew界面应用](https://github.com/mil
 - [Intellij IDEA](https://www.jetbrains.com/zh-cn/idea/download/#section=mac)
 - [Visual Studio Code](https://code.visualstudio.com/)
 - [Cursor](https://cursor.com/home)
-- [Trae海外版](https://www.trae.ai/)、[Trae CN](https://www.trae.cn/)
+- [Trae国际版](https://www.trae.ai/)、[Trae CN](https://www.trae.cn/)
 - [Warp](https://www.warp.dev/)(一款AI terminal。需要付费使用)
-- [Github Desktop]()
-- [Apifox]()、[Postman]()、[Apipost]()
+- ~~[Github Desktop]()~~
+- [Apifox]()、~~[Postman]()、[Apipost]()~~
 - [Docker Desktop](https://www.docker.com/)([镜像](https://docker.fxxk.dedyn.io/)、[汉化](https://github.com/asxez/DockerDesktop-CN))
 - [Notepad--](https://github.com/cxasm/notepad--)（Mac不支持Notepad++）
-- [PixPin](https://pixpin.cn/)：截图软件，你也可以使用[Snipaste](https://www.snipaste.com/) 或者[小旺](https://www.xiaowang.com/)(接入AI的)（难绷，Google搜不出来，全是打广告的，又不给官网链接），个人觉得PixPin功能更舒服一些
+- [PixPin](https://pixpin.cn/)：截图软件，你也可以使用[Snipaste](https://www.snipaste.com/) 或者[小旺](https://www.xiaowang.com/)(接入AI的)
 
 可选：
 
 - [Python](https://www.python.org/downloads/macos/)、[Pycharm](https://www.jetbrains.com/pycharm/)(如果你需要的话)
 - [VMware Fusion](https://support.broadcom.com/group/ecx/productdownloads?subfamily=VMware%20Fusion&freeDownloads=true)、[Free Downloads](https://support.broadcom.com/group/ecx/free-downloads)登陆后使用(第一次下载需要砍协议还有填地址)（Mac没有VMware workstation，而且注意镜像的架构是否和Mac一致，否则可能无法运行从Windows带过来的虚拟机镜像)
-- 特殊系列可以在[此处](https://blog.idejihuo.com/jetbrains/intellij-idea-2025-1-3-the-latest-cracking-tool-for-permanent-activation-codes.html)获取特殊工具
+- ~~特殊系列可以在[此处](https://blog.idejihuo.com/jetbrains/intellij-idea-2025-1-3-the-latest-cracking-tool-for-permanent-activation-codes.html)获取特殊工具~~
 - 如果你需要Microsoft-Office，请移步： [Mac快速使用.md](./Mac快速使用.md) 
-- HbuilderX
-- Another Redis Desktop Manager
-- 微信开发者工具
+- [HbuilderX]()
+- [Another Redis Desktop Manager]()
+- [微信开发者工具]()
 
 
 
@@ -72,12 +67,12 @@ Homebrew友好界面：[Mac可视化Homebrew界面应用](https://github.com/mil
 - [OBS](https://obsproject.com/)：强大的屏幕录制软件
 - DeepL：翻译软件，你也可以使用有道翻译
 - [IINA](https://iina.io/)：视频播放器（没有PotPlayer,不用找了)
-- [vanilla](https://matthewpalmer.net/vanilla/)(自动隐藏功能收费):Hide menu bar icons on your Mac.Windows上面的隐藏应用图标
+- ~~[vanilla](https://matthewpalmer.net/vanilla/)(自动隐藏功能收费):Hide menu bar icons on your Mac.Windows上面的隐藏应用图标~~
 - [Ice](https://github.com/jordanbaird/Ice)：开源免费，自动隐藏，个人觉得比上面的好
 
 
 
-> 如果你想在Mac允许Windows或者Linux的软件，你需要安装虚拟机或者其他工具。
+> 如果你想在Mac运行Windows或者Linux的软件，你需要安装虚拟机或者其他工具。
 
 ## 环境搭建
 
@@ -89,7 +84,7 @@ Homebrew友好界面：[Mac可视化Homebrew界面应用](https://github.com/mil
 
 > [!note]
 >
-> 说实话，除了JDK，Git，Maven，NodeJS这些安装在Mac上，其他的还是建议在Docker上装，
+> 说实话，除了JDK，Git，Maven，NodeJS这些安装在Mac上，其他的还是建议在Docker上装，容易污染宿主机环境
 
 ### JDK
 
@@ -148,7 +143,7 @@ git --version
 
 > [!caution]
 >
-> 注意嗷，MacOS会自带一个Git（CLT自带），千万别想着删除哦～
+> 注意嗷，MacOS会自带一个Git（CLT自带）
 >
 > 安装后你可以使用`which git`查看当前使用哪个git
 >
@@ -186,7 +181,8 @@ git --version
 
 ##### nvm
 
-
+```
+```
 
 ##### n
 
