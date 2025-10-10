@@ -50,14 +50,16 @@ jobs:
               continue
             fi
 
-            # 超过 24 小时，仅在定时触发时检查
-            if [ "$GITHUB_EVENT_NAME" != "workflow_dispatch" ]; then
+            # 仅在定时触发时检查 PR 创建时间是否超过 24 小时
+            if [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
               PR_TS=$(date -d "$PR_CREATED_AT" +%s)
               DELTA=$((NOW_TS - PR_TS))
               if [ $DELTA -lt 86400 ]; then
                 LOG_ENTRIES+=("$LOG_MSG 未超过 24 小时，跳过")
                 continue
               fi
+            else
+              LOG_ENTRIES+=("$LOG_MSG 手动触发，跳过时间检查")
             fi
 
             # 检查 Auto-merge 标签
@@ -67,7 +69,8 @@ jobs:
             fi
 
             # 审批检查
-            PR_STATUS=$(gh pr view $PR_NUMBER --json reviews -q ".reviews[].state")
+            PR_STATUS=$(gh pr view $PR_NUMBER --json reviews -q '.[].state // empty' | tr '\n' ' ')
+            echo "Reviews for PR #$PR_NUMBER: $PR_STATUS"  # 调试日志
             if [ "$PR_AUTHOR" = "$REPO_OWNER" ]; then
               LOG_ENTRIES+=("$LOG_MSG 作者是仓库所有者，跳过审批检查")
             elif echo "$PR_STATUS" | grep -q "APPROVED"; then
@@ -78,7 +81,20 @@ jobs:
             fi
 
             PR_NUMS+=("$PR_NUMBER")
+            LOG_ENTRIES+=("$LOG_MSG 符合合并条件，将被处理")
           done
+
+          # 打印符合条件的 PR
+          echo "符合条件的 PR 列表:"
+          if [ ${#PR_NUMS[@]} -eq 0 ]; then
+            echo "无符合条件的 PR"
+            LOG_ENTRIES+=("无符合条件的 PR")
+          else
+            for pr in "${PR_NUMS[@]}"; do
+              echo "- PR #$pr"
+              LOG_ENTRIES+=("符合条件的 PR: #$pr")
+            done
+          fi
 
           # 输出 PR 列表为 JSON
           if [ ${#PR_NUMS[@]} -eq 0 ]; then
@@ -87,8 +103,6 @@ jobs:
             PR_JSON=$(printf '%s\n' "${PR_NUMS[@]}" | jq -R . | jq -s .)
             echo "pr_numbers=$PR_JSON" >> $GITHUB_OUTPUT
           fi
-
-
 
           # 生成日志文件
           LOG_FILE="pr_merge_log.md"
@@ -130,14 +144,14 @@ jobs:
           PR_NUMBER=${{ matrix.pr_number }}
           MAX_RETRIES=3
           RETRY_INTERVAL=3600  # 1小时
-          LOG_FILE="pr_merge_log.md"
+          LOG_FILE="pr_merge_log_${PR_NUMBER}.md"  # 避免日志覆盖
 
           COUNT=0
           SUCCESS=false
           while [ $COUNT -lt $MAX_RETRIES ]; do
             ATTEMPT_TIME=$(date "+%Y-%m-%d %H:%M:%S")
             echo "[$ATTEMPT_TIME] 尝试第 $((COUNT+1)) 次合并 PR #$PR_NUMBER..."
-            if gh pr merge $PR_NUMBER --merge --auto; then
+            if gh pr merge $PR_NUMBER --merge --auto --delete-branch; then
               echo "[$ATTEMPT_TIME] PR #$PR_NUMBER 合并成功"
               echo "- [$ATTEMPT_TIME] PR #$PR_NUMBER 合并成功 ✅" >> $LOG_FILE
               SUCCESS=true
@@ -159,5 +173,5 @@ jobs:
       - name: 上传合并日志
         uses: actions/upload-artifact@v4
         with:
-          name: pr-merge-log
-          path: pr_merge_log.md
+          name: pr-merge-log-${{ matrix.pr_number }}
+          path: pr_merge_log_${{ matrix.pr_number }}.md
