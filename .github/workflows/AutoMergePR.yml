@@ -1,87 +1,155 @@
-name: Auto-MergePR
+name: Scheduled Auto-Merge to Main (Full Features, Logging)
 
 on:
-  pull_request:
-    types:
-      - opened     # PR 被创建时触发
-      - synchronize # PR 更新时触发（例如，提交新的代码）
-      - reopened    # PR 被重新打开时触发
+  schedule:
+    - cron: '0 0 * * *'  # 每天 UTC 0 点执行
+  workflow_dispatch:     # 支持手动触发
 
 jobs:
-  merge:
+  prepare-prs:
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: read  # 读取仓库内容
-      pull-requests: write  # 允许修改 PR
-      issues: read  # 读取 Issues 信息
-      # 你可以根据需要添加更多的权限
-
+    outputs:
+      pr_numbers: ${{ steps.get_prs.outputs.pr_numbers }}
     steps:
-      # 第一步：检查出代码
       - name: 检出代码
-        uses: actions/checkout@v4  # 使用 GitHub 官方提供的检出代码的 action
+        uses: actions/checkout@v4
 
-      # 第二步：安装 GitHub CLI
+      - name: 安装依赖
+        run: sudo apt-get update && sudo apt-get install -y jq curl
+
       - name: 安装 GitHub CLI
         run: |
           curl -sSL https://github.com/cli/cli/releases/download/v2.11.0/gh_2.11.0_linux_amd64.deb -o gh.deb
           sudo dpkg -i gh.deb
-          sudo apt-get install -f  # 解决任何缺少的依赖
+          sudo apt-get install -f
 
-      # 第三步：登录 GitHub CLI
-      - name: 登录到 GitHub CLI
+      - name: 登录 GitHub CLI
         run: gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
 
-      # 第四步：检查 PR 是否包含 Auto-merge 标签
-      - name: 检查 PR 是否包含 Auto-merge 标签
+      - name: 获取符合条件的 PR
+        id: get_prs
         run: |
-          # 获取 PR 的标签列表
-          LABELS=$(gh pr view ${{ github.event.pull_request.number }} --json labels -q ".labels[].name")
-          
-          # 检查标签是否包含 'Auto-merge'
-          if echo "$LABELS" | grep -q "Auto-merge"; then
-            echo "PR 包含 Auto-merge 标签，继续合并"
-          else
-            echo "PR 不包含 Auto-merge 标签，跳过合并"
-            exit 1  # 如果没有包含 'Auto-merge' 标签，停止后续步骤
-          fi
-
-      # 第五步：检查 PR 创建者是否是仓库持有者
-      - name: 检查 PR 创建者是否是仓库持有者
-        run: |
-          # 获取仓库信息，提取仓库所有者
+          NOW_TS=$(date +%s)
           REPO_OWNER=$(gh repo view ${{ github.repository }} --json owner -q ".owner.login")
 
-          # 获取 PR 创建者的用户名
-          PR_CREATOR=${{ github.event.pull_request.user.login }}
+          PR_NUMS=()
+          LOG_ENTRIES=()
 
-          # 比较 PR 创建者与仓库所有者
-          if [ "$REPO_OWNER" == "$PR_CREATOR" ]; then
-            echo "PR 创建者是仓库持有者，继续合并"
-          else
-            echo "PR 创建者不是仓库持有者，跳过合并"
-            exit 1  # 如果创建者不是仓库持有者，停止后续步骤
+          gh pr list --state open --json number,createdAt,author,labels,baseRefName | jq -c '.[]' | while read PR; do
+            PR_NUMBER=$(echo "$PR" | jq -r '.number')
+            PR_CREATED_AT=$(echo "$PR" | jq -r '.createdAt')
+            PR_AUTHOR=$(echo "$PR" | jq -r '.author.login')
+            PR_LABELS=$(echo "$PR" | jq -r '.labels[].name // empty')
+            PR_BASE=$(echo "$PR" | jq -r '.baseRefName')
+
+            LOG_MSG="PR #$PR_NUMBER"
+
+            # 只处理目标分支 main
+            if [ "$PR_BASE" != "main" ]; then
+              LOG_ENTRIES+=("$LOG_MSG 目标分支不是 main，跳过")
+              continue
+            fi
+
+            # 超过 24 小时，仅在定时触发时检查
+            if [ "$GITHUB_EVENT_NAME" != "workflow_dispatch" ]; then
+              PR_TS=$(date -d "$PR_CREATED_AT" +%s)
+              DELTA=$((NOW_TS - PR_TS))
+              if [ $DELTA -lt 86400 ]; then
+                LOG_ENTRIES+=("$LOG_MSG 未超过 24 小时，跳过")
+                continue
+              fi
+            fi
+
+            # 检查 Auto-merge 标签
+            if ! echo "$PR_LABELS" | grep -q "Auto-merge"; then
+              LOG_ENTRIES+=("$LOG_MSG 不包含 Auto-merge 标签，跳过")
+              continue
+            fi
+
+            # 审批检查
+            PR_STATUS=$(gh pr view $PR_NUMBER --json reviews -q ".reviews[].state")
+            if [ "$PR_AUTHOR" = "$REPO_OWNER" ]; then
+              LOG_ENTRIES+=("$LOG_MSG 作者是仓库所有者，跳过审批检查")
+            elif echo "$PR_STATUS" | grep -q "APPROVED"; then
+              LOG_ENTRIES+=("$LOG_MSG 已批准")
+            else
+              LOG_ENTRIES+=("$LOG_MSG 未批准，跳过合并")
+              continue
+            fi
+
+            PR_NUMS+=("$PR_NUMBER")
+          done
+
+          # 输出 PR 列表
+          echo "pr_numbers=${PR_NUMS[*]}" >> $GITHUB_OUTPUT
+
+          # 生成日志文件
+          LOG_FILE="pr_merge_log.md"
+          echo "# PR 合并检查日志 - $(date)" > $LOG_FILE
+          for entry in "${LOG_ENTRIES[@]}"; do
+            echo "- $entry" >> $LOG_FILE
+          done
+          echo "生成日志文件 $LOG_FILE"
+          cat $LOG_FILE
+
+      - name: 上传日志为 artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: pr-merge-log
+          path: pr_merge_log.md
+
+  merge-prs:
+    needs: prepare-prs
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        pr_number: ${{ fromJSON(needs.prepare-prs.outputs.pr_numbers) }}
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 GitHub CLI
+        run: |
+          curl -sSL https://github.com/cli/cli/releases/download/v2.11.0/gh_2.11.0_linux_amd64.deb -o gh.deb
+          sudo dpkg -i gh.deb
+          sudo apt-get install -f
+
+      - name: 登录 GitHub CLI
+        run: gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: 自动合并 PR（带重试日志）
+        run: |
+          PR_NUMBER=${{ matrix.pr_number }}
+          MAX_RETRIES=3
+          RETRY_INTERVAL=3600  # 1小时
+          LOG_FILE="pr_merge_log.md"
+
+          COUNT=0
+          SUCCESS=false
+          while [ $COUNT -lt $MAX_RETRIES ]; do
+            ATTEMPT_TIME=$(date "+%Y-%m-%d %H:%M:%S")
+            echo "[$ATTEMPT_TIME] 尝试第 $((COUNT+1)) 次合并 PR #$PR_NUMBER..."
+            if gh pr merge $PR_NUMBER --merge --auto; then
+              echo "[$ATTEMPT_TIME] PR #$PR_NUMBER 合并成功"
+              echo "- [$ATTEMPT_TIME] PR #$PR_NUMBER 合并成功 ✅" >> $LOG_FILE
+              SUCCESS=true
+              break
+            else
+              echo "[$ATTEMPT_TIME] PR #$PR_NUMBER 合并失败，等待 $RETRY_INTERVAL 秒后重试..."
+              echo "- [$ATTEMPT_TIME] PR #$PR_NUMBER 合并失败 ❌" >> $LOG_FILE
+              COUNT=$((COUNT+1))
+              sleep $RETRY_INTERVAL
+            fi
+          done
+
+          if [ "$SUCCESS" = false ]; then
+            echo "PR #$PR_NUMBER 合并失败，达到最大重试次数 $MAX_RETRIES"
+            echo "- PR #$PR_NUMBER 合并失败，达到最大重试次数 ❌" >> $LOG_FILE
+            exit 1
           fi
 
-      # 第六步：检查 PR 是否准备好合并
-      - name: 检查 PR 是否准备好合并
-        run: |
-          # 使用 GitHub CLI 获取 PR 的审查状态
-          PR_STATUS=$(gh pr view ${{ github.event.pull_request.number }} --json reviews -q ".reviews[].state")
-
-          # 这里检查 PR 是否已经获得批准
-          if echo "$PR_STATUS" | grep -q "APPROVED"; then
-            echo "PR 已经批准，准备合并"
-          else
-            echo "PR 未批准，跳过合并"
-            exit 1  # 如果未通过审批，停止执行后续步骤
-          fi
-
-      # 第七步：执行合并操作
-      - name: 自动合并 PR
-        if: success()  # 只有前面的步骤都成功时才会执行此步骤
-        run: |
-          # 使用 GitHub CLI 执行 PR 合并
-          gh pr merge ${{ github.event.pull_request.number }} --merge --auto --delete-branch
-          echo "PR 已合并"
+      - name: 上传合并日志
+        uses: actions/upload-artifact@v3
+        with:
+          name: pr-merge-log
+          path: pr_merge_log.md
