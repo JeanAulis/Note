@@ -1,10 +1,14 @@
-这个人很懒，什么都没有留下
+# NOTE
+
+## 这个人很懒，什么都没有留下
 
 
 
-# TODO
+## TODO
 
-[TODO-List](./问题解决/TODO.md)
+- [ ] 
+
+[TODO-study-List](./问题解决/TODO-study.md)
 
 
 
@@ -16,4 +20,3 @@
     Back To Top
   </a>
 </p>
-

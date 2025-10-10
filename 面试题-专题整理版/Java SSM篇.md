@@ -466,3 +466,30 @@ MyBatis是Java持久层框架，其缓存机制提升查询性能。
 >
 > 1. `#`和`$`的区别
 > 2. 问到底层原理则战略性放弃
+
+
+
+## 23. springBoot常用注解有哪些？spring常用注解有哪些？
+
+SpringBoot的常用注解有：
+
+`@SpringBootApplication`：它是标注SpringBoot启动类的注解
+
+`@EnableAutoConfiguration`：自动注解的配置类
+
+`@ConfigurationProperties`：配置绑定
+
+`@SpringBootTest`：测试类
+
+Spring的常用注解有
+
+和IOC相关的：
+@Component：注册：bean对象，一般用在方法类上
+@Bean：注册bean对象，一般用在方法上
+@Autowire：自动注入
+
+和Web层相关的有: 
+@Controller：标记控制器
+@RequestMapping：映射请求资源和请求方法
+@RestController(包含@Controller和@ResponseBody)：用于返回JSON给前端
+@RequestBody：把请求体的JSON或者XML转换为java对象
