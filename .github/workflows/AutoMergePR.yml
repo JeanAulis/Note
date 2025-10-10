@@ -226,7 +226,7 @@ jobs:
             echo "- [$ATTEMPT_TIME] 尝试第 $((COUNT+1))/$MAX_RETRIES 次合并" >> $LOG_FILE
             
             # 移除 --auto 参数，直接合并
-            if gh pr merge $PR_NUMBER --merge --delete-branch; then
+            if gh pr merge $PR_NUMBER --merge; then
               echo "[$ATTEMPT_TIME] ✅ PR #$PR_NUMBER 合并成功"
               echo "- [$ATTEMPT_TIME] ✅ 合并成功" >> $LOG_FILE
               SUCCESS=true
