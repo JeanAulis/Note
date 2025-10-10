@@ -148,11 +148,273 @@ jobs:
           echo "=========================================="
 
           # 输出 PR 列表为 JSON
+          echo "🔍 DEBUG: PR_NUMS 数组内容: ${PR_NUMS[@]}"
+          echo "🔍 DEBUG: PR_NUMS 数组长度: ${#PR_NUMS[@]}"
+          
           if [ ${#PR_NUMS[@]} -eq 0 ]; then
             echo "pr_numbers=[]" >> $GITHUB_OUTPUT
+            echo "🔍 DEBUG: 输出空数组到 GITHUB_OUTPUT"
           else
-            PR_JSON=$(printf '%s\n' "${PR_NUMS[@]}" | jq -R . | jq -s .)
+            # 直接构造 JSON 数组，不使用管道
+            PR_JSON="["
+            for i in "${!PR_NUMS[@]}"; do
+              if [ $i -eq 0 ]; then
+                PR_JSON="${PR_JSON}${PR_NUMS[$i]}"
+              else
+                PR_JSON="${PR_JSON},${PR_NUMS[$i]}"
+              fi
+            done
+            PR_JSON="${PR_JSON}]"
+            echo "🔍 DEBUG: 生成的 JSON: $PR_JSON"
             echo "pr_numbers=$PR_JSON" >> $GITHUB_OUTPUT
+            echo "🔍 DEBUG: 已输出到 GITHUB_OUTPUT"
+          fi
+
+          # 生成日志文件
+          LOG_FILE="pr_merge_log.md"
+          echo "# PR 合并检查日志 - $(date)" > $LOG_FILE
+          echo "" >> $LOG_FILE
+          echo "## 触发类型" >> $LOG_FILE
+          echo "- $GITHUB_EVENT_NAME" >> $LOG_FILE
+          echo "" >> $LOG_FILE
+          echo "## 详细日志" >> $LOG_FILE
+          for entry in "${LOG_ENTRIES[@]}"; do
+            echo "- $entry" >> $LOG_FILE
+          done
+          echo "生成日志文件 $LOG_FILE"
+          cat $LOG_FILE
+
+      - name: 上传日志为 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-merge-log
+          path: pr_merge_log.md
+
+  merge-prs:
+    needs: prepare-prs
+    runs-on: ubuntu-latest
+    if: needs.prepare-prs.outputs.pr_numbers != '[]'  # 避免空矩阵错误
+    strategy:
+      matrix:
+        pr_number: ${{ fromJSON(needs.prepare-prs.outputs.pr_numbers) }}
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 GitHub CLI
+        run: |
+          curl -sSL https://github.com/cli/cli/releases/download/v2.11.0/gh_2.11.0_linux_amd64.deb -o gh.deb
+          sudo dpkg -i gh.deb
+          sudo apt-get install -f
+
+      - name: 登录 GitHub CLI
+        run: gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: 自动合并 PR（带重试日志）
+        run: |
+          PR_NUMBER=${{ matrix.pr_number }}
+          MAX_RETRIES=3
+          RETRY_INTERVAL=3600  # 1小时
+          LOG_FILE="pr_merge_log_${PR_NUMBER}.md"  # 避免日志覆盖
+
+          COUNT=0
+          SUCCESS=false
+          while [ $COUNT -lt $MAX_RETRIES ]; do
+            ATTEMPT_TIME=$(date "+%Y-%m-%d %H:%M:%S")
+            echo "[$ATTEMPT_TIME] 尝试第 $((COUNT+1)) 次合并 PR #$PR_NUMBER..."
+            if gh pr merge $PR_NUMBER --merge --auto --delete-branch; then
+              echo "[$ATTEMPT_TIME] PR #$PR_NUMBER 合并成功"
+              echo "- [$ATTEMPT_TIME] PR #$PR_NUMBER 合并成功 ✅" >> $LOG_FILE
+              SUCCESS=true
+              break
+            else
+              echo "[$ATTEMPT_TIME] PR #$PR_NUMBER 合并失败，等待 $RETRY_INTERVAL 秒后重试..."
+              echo "- [$ATTEMPT_TIME] PR #$PR_NUMBER 合并失败 ❌" >> $LOG_FILE
+              COUNT=$((COUNT+1))
+              sleep $RETRY_INTERVAL
+            fi
+          done
+
+          if [ "$SUCCESS" = false ]; then
+            echo "PR #$PR_NUMBER 合并失败,达到最大重试次数 $MAX_RETRIES"
+            echo "- PR #$PR_NUMBER 合并失败,达到最大重试次数 ❌" >> $LOG_FILE
+            exit 1
+          fi
+
+      - name: 上传合并日志
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-merge-log-${{ matrix.pr_number }}
+          path: pr_merge_log_${{ matrix.pr_number }}.mdname: Auto-Merge to Main (Full Features, Logging)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:     # 支持手动触发
+
+jobs:
+  prepare-prs:
+    runs-on: ubuntu-latest
+    outputs:
+      pr_numbers: ${{ steps.get_prs.outputs.pr_numbers }}
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装依赖
+        run: sudo apt-get update && sudo apt-get install -y jq curl
+
+      - name: 安装 GitHub CLI
+        run: |
+          curl -sSL https://github.com/cli/cli/releases/download/v2.11.0/gh_2.11.0_linux_amd64.deb -o gh.deb
+          sudo dpkg -i gh.deb
+          sudo apt-get install -f
+
+      - name: 登录 GitHub CLI
+        run: gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: 获取符合条件的 PR
+        id: get_prs
+        run: |
+          REPO_OWNER=$(gh repo view ${{ github.repository }} --json owner -q ".owner.login")
+
+          PR_NUMS=()
+          LOG_ENTRIES=()
+          SKIPPED_PRS=()
+
+          # ========== DEBUG: 打印触发类型 ==========
+          echo "=========================================="
+          echo "🔍 DEBUG: 工作流触发类型 = $GITHUB_EVENT_NAME"
+          echo "=========================================="
+
+          # ========== DEBUG: 获取所有开放的 PR ==========
+          echo ""
+          echo "=========================================="
+          echo "🔍 DEBUG: 开始获取所有开放的 PR..."
+          ALL_PRS=$(gh pr list --state open --json number,createdAt,author,labels,baseRefName,mergeable)
+          echo "🔍 DEBUG: 所有开放的 PR 原始数据:"
+          echo "$ALL_PRS" | jq '.'
+          echo "=========================================="
+          echo ""
+
+          while read PR; do
+            PR_NUMBER=$(echo "$PR" | jq -r '.number')
+            PR_CREATED_AT=$(echo "$PR" | jq -r '.createdAt')
+            PR_AUTHOR=$(echo "$PR" | jq -r '.author.login')
+            PR_LABELS=$(echo "$PR" | jq -r '.labels[].name // empty')
+            PR_BASE=$(echo "$PR" | jq -r '.baseRefName')
+            PR_MERGEABLE=$(echo "$PR" | jq -r '.mergeable')
+
+            # ========== DEBUG: 打印当前处理的 PR 信息 ==========
+            echo ""
+            echo "=========================================="
+            echo "🔍 DEBUG: 正在处理 PR #$PR_NUMBER"
+            echo "🔍 DEBUG: - 作者: $PR_AUTHOR"
+            echo "🔍 DEBUG: - 创建时间: $PR_CREATED_AT"
+            echo "🔍 DEBUG: - 目标分支: $PR_BASE"
+            echo "🔍 DEBUG: - 标签: $PR_LABELS"
+            echo "🔍 DEBUG: - 可合并状态: $PR_MERGEABLE"
+            echo "=========================================="
+
+            LOG_MSG="PR #$PR_NUMBER"
+
+            # 检查目标分支
+            if [ "$PR_BASE" != "main" ]; then
+              echo "🔍 DEBUG: PR #$PR_NUMBER 目标分支不是 main，跳过"
+              LOG_ENTRIES+=("$LOG_MSG 目标分支不是 main，跳过")
+              SKIPPED_PRS+=("- PR #$PR_NUMBER: 目标分支不是 main")
+              continue
+            fi
+
+            # 检查冲突状态
+            if [ "$PR_MERGEABLE" = "CONFLICTING" ]; then
+              echo "🔍 DEBUG: PR #$PR_NUMBER 存在合并冲突，跳过"
+              LOG_ENTRIES+=("$LOG_MSG 存在合并冲突，跳过")
+              SKIPPED_PRS+=("- PR #$PR_NUMBER: 存在合并冲突 ⚠️")
+              continue
+            fi
+
+            # 检查 Auto-merge 标签
+            if ! echo "$PR_LABELS" | grep -q "Auto-merge"; then
+              echo "🔍 DEBUG: PR #$PR_NUMBER 不包含 Auto-merge 标签，跳过"
+              LOG_ENTRIES+=("$LOG_MSG 不包含 Auto-merge 标签，跳过")
+              SKIPPED_PRS+=("- PR #$PR_NUMBER: 不包含 Auto-merge 标签")
+              continue
+            fi
+
+            # 审批检查
+            PR_REVIEWS=$(gh pr view $PR_NUMBER --json reviews -q '.reviews[] | .state' 2>/dev/null || echo "")
+            echo "🔍 DEBUG: PR #$PR_NUMBER 审批状态: $PR_REVIEWS"
+            
+            if [ "$PR_AUTHOR" = "$REPO_OWNER" ]; then
+              echo "🔍 DEBUG: PR #$PR_NUMBER 作者是仓库所有者，跳过审批检查"
+              LOG_ENTRIES+=("$LOG_MSG 作者是仓库所有者，跳过审批检查")
+            elif echo "$PR_REVIEWS" | grep -q "APPROVED"; then
+              echo "🔍 DEBUG: PR #$PR_NUMBER 已批准"
+              LOG_ENTRIES+=("$LOG_MSG 已批准")
+            else
+              echo "🔍 DEBUG: PR #$PR_NUMBER 未批准，跳过合并"
+              LOG_ENTRIES+=("$LOG_MSG 未批准，跳过合并")
+              SKIPPED_PRS+=("- PR #$PR_NUMBER: 未批准")
+              continue
+            fi
+
+            PR_NUMS+=("$PR_NUMBER")
+            echo "🔍 DEBUG: PR #$PR_NUMBER 符合合并条件 ✅"
+            LOG_ENTRIES+=("$LOG_MSG 符合合并条件，将被处理")
+          done < <(echo "$ALL_PRS" | jq -c '.[]')
+
+          # 打印符合条件的 PR
+          echo ""
+          echo "=========================================="
+          echo "✅ 符合条件的 PR 列表:"
+          if [ ${#PR_NUMS[@]} -eq 0 ]; then
+            echo "无符合条件的 PR"
+            LOG_ENTRIES+=("无符合条件的 PR")
+          else
+            for pr in "${PR_NUMS[@]}"; do
+              echo "- PR #$pr"
+              LOG_ENTRIES+=("符合条件的 PR: #$pr")
+            done
+          fi
+          echo "=========================================="
+
+          # 打印不符合条件的 PR 及其原因
+          echo ""
+          echo "=========================================="
+          echo "❌ 不符合条件的 PR 及其原因:"
+          if [ ${#SKIPPED_PRS[@]} -eq 0 ]; then
+            echo "无被过滤的 PR"
+            LOG_ENTRIES+=("无被过滤的 PR")
+          else
+            for skipped in "${SKIPPED_PRS[@]}"; do
+              echo "$skipped"
+              LOG_ENTRIES+=("$skipped")
+            done
+          fi
+          echo "=========================================="
+
+          # 输出 PR 列表为 JSON
+          echo "🔍 DEBUG: PR_NUMS 数组内容: ${PR_NUMS[@]}"
+          echo "🔍 DEBUG: PR_NUMS 数组长度: ${#PR_NUMS[@]}"
+          
+          if [ ${#PR_NUMS[@]} -eq 0 ]; then
+            echo "pr_numbers=[]" >> $GITHUB_OUTPUT
+            echo "🔍 DEBUG: 输出空数组到 GITHUB_OUTPUT"
+          else
+            # 直接构造 JSON 数组，不使用管道
+            PR_JSON="["
+            for i in "${!PR_NUMS[@]}"; do
+              if [ $i -eq 0 ]; then
+                PR_JSON="${PR_JSON}${PR_NUMS[$i]}"
+              else
+                PR_JSON="${PR_JSON},${PR_NUMS[$i]}"
+              fi
+            done
+            PR_JSON="${PR_JSON}]"
+            echo "🔍 DEBUG: 生成的 JSON: $PR_JSON"
+            echo "pr_numbers=$PR_JSON" >> $GITHUB_OUTPUT
+            echo "🔍 DEBUG: 已输出到 GITHUB_OUTPUT"
           fi
 
           # 生成日志文件
