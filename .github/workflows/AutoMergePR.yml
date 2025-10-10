@@ -1,164 +1,95 @@
 name: Auto-Merge to Main
-# 当PR opened, synchronize, reopened, labeled 时执行,只处理触发的PR
+# 仅在添加标签时触发，检查 Auto-merge 标签后启用 GitHub auto-merge
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, labeled]
+    types: [labeled]
 
 permissions:
   contents: write
   pull-requests: write
 
 jobs:
-  check-pr:
+  enable-auto-merge:
     runs-on: ubuntu-latest
-    outputs:
-      should_merge: ${{ steps.check.outputs.should_merge }}
+    if: github.event.label.name == 'Auto-merge'  # 只处理 Auto-merge 标签
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
 
-      - name: 检查 PR 是否符合合并条件
-        id: check
+      - name: 检查 PR 是否符合启用条件
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           PR_NUMBER=${{ github.event.pull_request.number }}
           REPO_OWNER=$(gh repo view ${{ github.repository }} --json owner -q ".owner.login")
-          LOG_FILE="pr_check_log_${PR_NUMBER}.md"
+          LOG_FILE="pr_enable_log_${PR_NUMBER}.md"
 
           echo "🔍 正在检查 PR #$PR_NUMBER"
-          echo "# PR #$PR_NUMBER 检查日志 - $(date)" > $LOG_FILE
+          echo "# PR #$PR_NUMBER 启用日志 - $(date)" > $LOG_FILE
           echo "" >> $LOG_FILE
 
           # 获取 PR 信息
           PR_INFO=$(gh pr view $PR_NUMBER --json author,labels,baseRefName,mergeable)
           PR_AUTHOR=$(echo "$PR_INFO" | jq -r '.author.login')
-          PR_LABELS=$(echo "$PR_INFO" | jq -r '.labels[].name // empty')
           PR_BASE=$(echo "$PR_INFO" | jq -r '.baseRefName')
           PR_MERGEABLE=$(echo "$PR_INFO" | jq -r '.mergeable')
 
           echo "## PR 信息" >> $LOG_FILE
           echo "- 作者: $PR_AUTHOR" | tee -a $LOG_FILE
           echo "- 目标分支: $PR_BASE" | tee -a $LOG_FILE
-          echo "- 标签: $PR_LABELS" | tee -a $LOG_FILE
           echo "- 可合并状态: $PR_MERGEABLE" | tee -a $LOG_FILE
           echo "" >> $LOG_FILE
 
           echo "## 检查结果" >> $LOG_FILE
-          SHOULD_MERGE=true
+          SHOULD_ENABLE=true
 
           # 检查目标分支
           if [ "$PR_BASE" != "main" ]; then
-            echo "❌ 目标分支不是 main,跳过合并" | tee -a $LOG_FILE
-            SHOULD_MERGE=false
+            echo "❌ 目标分支不是 main,跳过" | tee -a $LOG_FILE
+            SHOULD_ENABLE=false
           else
             echo "✅ 目标分支是 main" | tee -a $LOG_FILE
           fi
 
-          # 检查冲突状态
+          # 检查冲突状态（GitHub auto-merge 会自动处理后续变化）
           if [ "$PR_MERGEABLE" = "CONFLICTING" ]; then
-            echo "❌ 存在合并冲突,跳过合并" | tee -a $LOG_FILE
-            SHOULD_MERGE=false
+            echo "❌ 存在合并冲突,跳过（后续解决后 GitHub 会自动合并）" | tee -a $LOG_FILE
+            SHOULD_ENABLE=false
           else
             echo "✅ 无合并冲突" | tee -a $LOG_FILE
           fi
 
-          # 检查 Auto-merge 标签
-          if ! echo "$PR_LABELS" | grep -q "Auto-merge"; then
-            echo "❌ 不包含 Auto-merge 标签,跳过合并" | tee -a $LOG_FILE
-            SHOULD_MERGE=false
-          else
-            echo "✅ 包含 Auto-merge 标签" | tee -a $LOG_FILE
-          fi
-
           # 审批检查
           PR_REVIEWS=$(gh pr view $PR_NUMBER --json reviews -q '.reviews[] | .state' 2>/dev/null || echo "")
-          
           if [ "$PR_AUTHOR" = "$REPO_OWNER" ]; then
-            echo "✅ 作者是仓库所有者,跳过审批检查" | tee -a $LOG_FILE
+            echo "✅ 作者是仓库所有者,跳过审批" | tee -a $LOG_FILE
           elif echo "$PR_REVIEWS" | grep -q "APPROVED"; then
             echo "✅ PR 已批准" | tee -a $LOG_FILE
           else
-            echo "❌ PR 未批准,跳过合并" | tee -a $LOG_FILE
-            SHOULD_MERGE=false
+            echo "❌ PR 未批准,跳过" | tee -a $LOG_FILE
+            SHOULD_ENABLE=false
           fi
 
-          # 输出最终结果
+          # 输出结果
           echo "" >> $LOG_FILE
           echo "## 最终结果" >> $LOG_FILE
-          if [ "$SHOULD_MERGE" = true ]; then
-            echo "✅ PR 符合合并条件" | tee -a $LOG_FILE
-          else
-            echo "❌ PR 不符合合并条件" | tee -a $LOG_FILE
-          fi
-
-          echo "should_merge=$SHOULD_MERGE" >> $GITHUB_OUTPUT
-
-      - name: 上传检查日志
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: pr-check-log-${{ github.event.pull_request.number }}
-          path: pr_check_log_${{ github.event.pull_request.number }}.md
-
-  merge-pr:
-    needs: check-pr
-    runs-on: ubuntu-latest
-    if: needs.check-pr.outputs.should_merge == 'true'
-    steps:
-      - name: 检出代码
-        uses: actions/checkout@v4
-
-      - name: 合并 PR
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          PR_NUMBER=${{ github.event.pull_request.number }}
-          LOG_FILE="pr_merge_log_${PR_NUMBER}.md"
-
-          echo "🚀 开始合并 PR #$PR_NUMBER"
-          echo "# PR #$PR_NUMBER 合并日志 - $(date)" > $LOG_FILE
-          echo "" >> $LOG_FILE
-          echo "## 合并过程" >> $LOG_FILE
-          
-          MAX_RETRIES=3
-          RETRY_INTERVAL=10
-          COUNT=0
-          SUCCESS=false
-          
-          while [ $COUNT -lt $MAX_RETRIES ]; do
-            ATTEMPT_TIME=$(date "+%Y-%m-%d %H:%M:%S")
-            echo "[$ATTEMPT_TIME] 尝试第 $((COUNT+1))/$MAX_RETRIES 次合并..." | tee -a $LOG_FILE
-            
-            if gh pr merge $PR_NUMBER --merge; then
-              echo "[$ATTEMPT_TIME] ✅ 合并成功" | tee -a $LOG_FILE
-              SUCCESS=true
-              break
+          if [ "$SHOULD_ENABLE" = true ]; then
+            echo "✅ 条件符合，开始启用 auto-merge" | tee -a $LOG_FILE
+            # 启用 auto-merge（merge 策略，使用 merge commit）
+            if gh pr merge $PR_NUMBER --auto --merge; then
+              echo "✅ Auto-merge 已启用，GitHub 将持续监控并自动合并" | tee -a $LOG_FILE
             else
-              MERGE_ERROR=$?
-              echo "[$ATTEMPT_TIME] ❌ 合并失败 (错误码: $MERGE_ERROR)" | tee -a $LOG_FILE
-              COUNT=$((COUNT+1))
-              
-              if [ $COUNT -lt $MAX_RETRIES ]; then
-                echo "[$ATTEMPT_TIME] 等待 $RETRY_INTERVAL 秒后重试..." | tee -a $LOG_FILE
-                sleep $RETRY_INTERVAL
-              fi
+              echo "❌ 启用失败" | tee -a $LOG_FILE
+              exit 1
             fi
-          done
-
-          echo "" >> $LOG_FILE
-          echo "## 最终结果" >> $LOG_FILE
-          if [ "$SUCCESS" = false ]; then
-            echo "❌ 合并失败,已达到最大重试次数 $MAX_RETRIES" | tee -a $LOG_FILE
-            exit 1
           else
-            echo "✅ 合并成功" | tee -a $LOG_FILE
+            echo "❌ 不符合条件" | tee -a $LOG_FILE
           fi
 
-      - name: 上传合并日志
+      - name: 上传日志
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: pr-merge-log-${{ github.event.pull_request.number }}
-          path: pr_merge_log_${{ github.event.pull_request.number }}.md
+          name: pr-enable-log-${{ github.event.pull_request.number }}
+          path: pr_enable_log_${{ github.event.pull_request.number }}.md
