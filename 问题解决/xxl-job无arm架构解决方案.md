@@ -41,7 +41,25 @@ docker inspect JA/xxl-job-admin:2.2.0 | grep "Architecture"
 # "Architecture": "arm64",  
 # 即可
 # 后续docker run JA/xxl-job-admin:2.2.0直接使用
+
+# 例子，不过多解释，自行AI理解：
+docker run \
+-e PARAMS="--spring.datasource.url=jdbc:mysql://host.docker.internal:3306/xxl_job?Unicode=true&characterEncoding=UTF-8 \
+--spring.datasource.username=root \
+--spring.datasource.password=123456" \
+--restart=always \
+-p 28080:8080 \ # 映射28080端口
+-v /Users/username/tmp/xxl-job-arm/xxl-job-admin-applogs:/data/applogs \ # 路径自行更改
+--name xxl-job-admin \
+-d \
+JA/xxl-job-admin:2.2.0
 ```
+
+登陆网址：http://localhost:28080/xxl-job-admin/toLogin
+
+账号：admin
+
+密码：123456
 
 ```mysql
 # 此文档来自官方https://gitee.com/xuxueli0323/xxl-job/blob/v2.2.0/doc/db/tables_xxl_job.sql#
