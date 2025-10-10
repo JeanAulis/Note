@@ -5,6 +5,10 @@ on:
     types: [opened, synchronize, reopened,labeled]
   workflow_dispatch:     # 支持手动触发
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   prepare-prs:
     runs-on: ubuntu-latest
