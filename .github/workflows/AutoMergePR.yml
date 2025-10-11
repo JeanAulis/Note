@@ -3,7 +3,7 @@ name: Auto-Merge to Main
 
 on:
   pull_request:
-    types: [labeled]
+    types: [labeled, reopened]
 
 permissions:
   contents: write
