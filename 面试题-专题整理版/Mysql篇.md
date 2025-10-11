@@ -55,7 +55,7 @@ mysql 默认的隔离级别是可重复读，Oracle的默认隔离级别是读�
 
 ## 4. 说一下mysql的存储引擎有哪些？说一下InnoDB和MyISAM的区别？
 
-<img src="./assets/image-20251009203116915.png" alt="image-20251009203116915" />
+<img src="./assets/image-20251009203116915.png" alt="image-20251009203116915" style="zoom:67%;" />
 
 ### mysql的存储引擎
 
@@ -108,6 +108,8 @@ mysql 默认的隔离级别是可重复读，Oracle的默认隔离级别是读�
 
 
 ## 5. 说一下数据库的三范式和反三范式
+
+// TODO 差总结，精炼版
 
 > [!tip]
 >

@@ -4,13 +4,13 @@
 
 ## 1. 你说一下什么aop？你说一下实现aop的步骤？aop的底层实现原理是什么?
 
-
+// TODO
 
 
 
 ## 2. 你在项目中用aop实现什么功能？用的是什么通知？
 
-
+// TODO
 
 
 
@@ -33,25 +33,30 @@
 
 
 
-## 4. mybatis的#和$的区别
+## 4. springBoot常用注解有哪些？spring常用注解有哪些？
 
-**`#{}`占位符**
+SpringBoot的常用注解有：
 
-特点：
+`@SpringBootApplication`：它是标注SpringBoot启动类的注解
 
-- 使用预编译PreparedStatement（不复用的话会导致性能差一些）
-- 自动转译防止SQL注入
-- 参数值会被加上单引号
-- 适用于参数值
+`@EnableAutoConfiguration`：自动注解的配置类
 
-**`${}`占位符**
+`@ConfigurationProperties`：配置绑定
 
-特点：
+`@SpringBootTest`：测试类
 
-- 直接进行字符串替换(字符串拼接)
-- 不会进行转译，存在SQL注入风险
-- 参数值不会加上引号
-- 适合动态表名、列名、order by等（多次请求性能高，且注入风险不高）
+Spring的常用注解有
+
+和IOC相关的：
+@Component：注册：bean对象，一般用在方法类上
+@Bean：注册bean对象，一般用在方法上
+@Autowire：自动注入
+
+和Web层相关的有: 
+@Controller：标记控制器
+@RequestMapping：映射请求资源和请求方法
+@RestController(包含@Controller和@ResponseBody)：用于返回JSON给前端
+@RequestBody：把请求体的JSON或者XML转换为java对象
 
 
 
@@ -62,6 +67,8 @@
 后端使用`@RequestParam MultipartFile file`类型来接收文件
 
 后端再选择保存到本地还是阿里的OSS，如果上传到阿里的OSS的话，就需要进行额外的配置（获取 AccessKey）Bucket，域名等配置
+
+// TODO
 
 
 
@@ -403,8 +410,6 @@ Bean生命周期的主要阶段
 2. **依赖顺序** - 构造注入要求在创建对象时就必须提供所有依赖，形成死锁
 3. **技术限制** - Java对象必须先通过构造函数创建实例，才能进行后续操作
 
-
-
 >  [!note]
 >
 > beanfactory和factorybean的区别
@@ -447,49 +452,8 @@ DispatcherServlet将ModelAndView传递给**ViewResolver**（视图解析器）�
 
 
 
-## 22. 介绍一下mybatis的一级和二级缓存
-
-MyBatis是Java持久层框架，其缓存机制提升查询性能。
-
-- **一级缓存**：SqlSession级别（默认开启）。同一SqlSession内，相同SQL和参数的查询结果缓存到缓存中。下次相同查询直接从缓存取。事务提交/关闭时清空。作用域小，适合短生命周期操作。
-- **二级缓存**：Mapper级别（需手动开启，在mapper.xml配置`<cache>`）。跨SqlSession共享，存储在 PerpetualCache（默认HashMap，可用Ehcache/Redis替换）。查询先查二级、再一级、再数据库。更新操作会清空相关缓存。支持序列化，适合读多写少场景。
-
-注意：一级缓存线程不安全，多线程需新SqlSession；二级缓存需配置eviction策略（如LRU）避免内存溢出。
-
->  [!important]
->
-> 类似：
->
-> ​	隔离级别：可重复读
->
-> 可能会问：
->
-> 1. `#`和`$`的区别
-> 2. 问到底层原理则战略性放弃
+## 22. 
 
 
 
-## 23. springBoot常用注解有哪些？spring常用注解有哪些？
-
-SpringBoot的常用注解有：
-
-`@SpringBootApplication`：它是标注SpringBoot启动类的注解
-
-`@EnableAutoConfiguration`：自动注解的配置类
-
-`@ConfigurationProperties`：配置绑定
-
-`@SpringBootTest`：测试类
-
-Spring的常用注解有
-
-和IOC相关的：
-@Component：注册：bean对象，一般用在方法类上
-@Bean：注册bean对象，一般用在方法上
-@Autowire：自动注入
-
-和Web层相关的有: 
-@Controller：标记控制器
-@RequestMapping：映射请求资源和请求方法
-@RestController(包含@Controller和@ResponseBody)：用于返回JSON给前端
-@RequestBody：把请求体的JSON或者XML转换为java对象
+## 23. 
