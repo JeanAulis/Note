@@ -1,82 +1,95 @@
-name: Auto-MergePR
+name: Auto-Merge to Main
+# 仅在添加标签时触发，检查 Auto-merge 标签后启用 GitHub auto-merge
 
 on:
   pull_request:
-    types:
-      - opened     # PR 被创建时触发
-      - synchronize # PR 更新时触发（例如，提交新的代码）
-      - reopened    # PR 被重新打开时触发
+    types: [labeled, reopened]
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
-  merge:
+  enable-auto-merge:
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: read  # 读取仓库内容
-      pull-requests: write  # 允许修改 PR
-      issues: read  # 读取 Issues 信息
-      # 你可以根据需要添加更多的权限
-
+    if: github.event.label.name == 'Auto-merge'  # 只处理 Auto-merge 标签
     steps:
-      # 第一步：检查出代码
       - name: 检出代码
-        uses: actions/checkout@v4  # 使用 GitHub 官方提供的检出代码的 action
+        uses: actions/checkout@v4
 
-      # 第二步：检查 PR 是否包含 Auto-merge 标签
-      - name: 检查 PR 是否包含 Auto-merge 标签
+      - name: 检查 PR 是否符合启用条件
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # 获取 PR 的标签列表
-          LABELS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels")
-          
-          # 检查标签是否包含 'Auto-merge'
-          if echo "$LABELS" | grep -q '"name": "Auto-merge"'; then
-            echo "PR 包含 Auto-merge 标签，继续合并"
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          REPO_OWNER=$(gh repo view ${{ github.repository }} --json owner -q ".owner.login")
+          LOG_FILE="pr_enable_log_${PR_NUMBER}.md"
+
+          echo "🔍 正在检查 PR #$PR_NUMBER"
+          echo "# PR #$PR_NUMBER 启用日志 - $(date)" > $LOG_FILE
+          echo "" >> $LOG_FILE
+
+          # 获取 PR 信息
+          PR_INFO=$(gh pr view $PR_NUMBER --json author,labels,baseRefName,mergeable)
+          PR_AUTHOR=$(echo "$PR_INFO" | jq -r '.author.login')
+          PR_BASE=$(echo "$PR_INFO" | jq -r '.baseRefName')
+          PR_MERGEABLE=$(echo "$PR_INFO" | jq -r '.mergeable')
+
+          echo "## PR 信息" >> $LOG_FILE
+          echo "- 作者: $PR_AUTHOR" | tee -a $LOG_FILE
+          echo "- 目标分支: $PR_BASE" | tee -a $LOG_FILE
+          echo "- 可合并状态: $PR_MERGEABLE" | tee -a $LOG_FILE
+          echo "" >> $LOG_FILE
+
+          echo "## 检查结果" >> $LOG_FILE
+          SHOULD_ENABLE=true
+
+          # 检查目标分支
+          if [ "$PR_BASE" != "main" ]; then
+            echo "❌ 目标分支不是 main,跳过" | tee -a $LOG_FILE
+            SHOULD_ENABLE=false
           else
-            echo "PR 不包含 Auto-merge 标签，跳过合并"
-            exit 1  # 如果没有包含 'Auto-merge' 标签，停止后续步骤
+            echo "✅ 目标分支是 main" | tee -a $LOG_FILE
           fi
 
-      # 第三步：检查 PR 创建者是否是仓库持有者
-      - name: 检查 PR 创建者是否是仓库持有者
-        run: |
-          # 获取仓库信息，提取仓库所有者
-          REPO_OWNER=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}" | jq -r '.owner.login')
-
-          # 获取 PR 创建者的用户名
-          PR_CREATOR=${{ github.event.pull_request.user.login }}
-
-          # 比较 PR 创建者与仓库所有者
-          if [ "$REPO_OWNER" == "$PR_CREATOR" ]; then
-            echo "PR 创建者是仓库持有者，继续合并"
+          # 检查冲突状态（GitHub auto-merge 会自动处理后续变化）
+          if [ "$PR_MERGEABLE" = "CONFLICTING" ]; then
+            echo "❌ 存在合并冲突,跳过（后续解决后 GitHub 会自动合并）" | tee -a $LOG_FILE
+            SHOULD_ENABLE=false
           else
-            echo "PR 创建者不是仓库持有者，跳过合并"
-            exit 1  # 如果创建者不是仓库持有者，停止后续步骤
+            echo "✅ 无合并冲突" | tee -a $LOG_FILE
           fi
 
-      # 第四步：检查 PR 是否准备好合并
-      - name: 检查 PR 是否准备好合并
-        run: |
-          # 使用 GitHub API 获取 PR 的审查状态
-          PR_STATUS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/reviews")
-          
-          # 这里检查 PR 是否已经获得批准
-          if [[ "$PR_STATUS" == *"APPROVED"* ]]; then
-            echo "PR 已经批准，准备合并"
+          # 审批检查
+          PR_REVIEWS=$(gh pr view $PR_NUMBER --json reviews -q '.reviews[] | .state' 2>/dev/null || echo "")
+          if [ "$PR_AUTHOR" = "$REPO_OWNER" ]; then
+            echo "✅ 作者是仓库所有者,跳过审批" | tee -a $LOG_FILE
+          elif echo "$PR_REVIEWS" | grep -q "APPROVED"; then
+            echo "✅ PR 已批准" | tee -a $LOG_FILE
           else
-            echo "PR 未批准，跳过合并"
-            exit 1  # 如果未通过审批，停止执行后续步骤
+            echo "❌ PR 未批准,跳过" | tee -a $LOG_FILE
+            SHOULD_ENABLE=false
           fi
 
-      # 第五步：自动合并 PR
-      - name: 自动合并 PR
-        if: success()  # 只有前面的步骤都成功时才会执行此步骤
-        uses: peter-evans/auto-merge-action@v4  # 使用 peter-evans 提供的自动合并 Action
+          # 输出结果
+          echo "" >> $LOG_FILE
+          echo "## 最终结果" >> $LOG_FILE
+          if [ "$SHOULD_ENABLE" = true ]; then
+            echo "✅ 条件符合，开始启用 auto-merge" | tee -a $LOG_FILE
+            # 启用 auto-merge（merge 策略，使用 merge commit）
+            if gh pr merge $PR_NUMBER --auto --squash; then
+              echo "✅ Auto-merge 已启用，GitHub 将持续监控并自动合并" | tee -a $LOG_FILE
+            else
+              echo "❌ 启用失败" | tee -a $LOG_FILE
+              exit 1
+            fi
+          else
+            echo "❌ 不符合条件" | tee -a $LOG_FILE
+          fi
+
+      - name: 上传日志
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}  # 使用 GITHUB_TOKEN 进行身份验证
-          merge_method: merge  # 合并方式：squash（压缩合并） / merge（标准合并） / rebase（变基合并）
-          
-          # 可选配置：可以选择只在特定条件下合并（例如只在目标分支是 main 时合并）
-          if: github.event.pull_request.base.ref == 'main'  # 只有当 PR 的目标分支是 main 时才合并
+          name: pr-enable-log-${{ github.event.pull_request.number }}
+          path: pr_enable_log_${{ github.event.pull_request.number }}.md
