@@ -4,6 +4,8 @@
 
 ## 1. (待整理)说一下缓存三兄弟/剑客分别造成的原因和解决方案？
 
+// TODO
+
 缓存三兄弟指的是缓存穿透、缓存击穿和缓存雪崩。
 
 ### 造成原因
@@ -58,6 +60,8 @@
 
 ## 2. (待整理)redis的常用数据类型有哪些？分别适用哪些场景？
 
+// TODO
+
 常用的有String,Hash,List,Set,Sorted Set (ZSet - 有序集合)，常用的有这5种
 
 String是最基础的数据类型，可以存储文本、数字或二进制数据
@@ -78,22 +82,26 @@ String是最基础的数据类型，可以存储文本、数字或二进制数�
 
 ## 4. 说一下redis的缓存淘汰策略? 说一下redis的过期策略?
 
+### 缓存策略
+
 缓存策略主要是用在内存不足的时候决定如何清理缓存数据。
 
-针对设置了过期时间的key：
+**针对设置了过期时间的key**：
 
-- volatile-lru:淘汰最近最少使用的key
-- volatile-lfu：淘汰使用频率最低的key
-- volatile-ttl：淘汰即将过期的key
-- volatile-random：随机淘汰key
+- `volatile-lru`:淘汰最近最少使用的key
+- `volatile-lfu`：淘汰使用频率最低的key
+- `volatile-ttl`：淘汰即将过期的key
+- `volatile-random`：随机淘汰key
 
 **针对所有key：**
 
-- allkeys-lru：从所有key中淘汰最近最少使用的
-- allkeys-lfu：从所有key中淘汰使用频率最低的
-- allkeys-random：从所有key中随机淘汰
+- `allkeys-lru`：从所有key中淘汰最近最少使用的
+- `allkeys-lfu`：从所有key中淘汰使用频率最低的
+- `allkeys-random`：从所有key中随机淘汰
 
-noeviction: 不淘汰数据
+`noeviction`（默认策略）: 不淘汰数据,当内存不足以容纳新写入的数据时，新写入操作会报错OOM，读、删除请求可以继续服务
+
+### 过期策略
 
 **Redis的过期策略：** Redis采用**惰性删除**和**定期删除**相结合的方式：
 
@@ -108,6 +116,8 @@ noeviction: 不淘汰数据
 
 
 ## 5. (待整理)项目中一般用redis来做什么？做缓存的情况下那你们怎么保证数据库和缓存的的一致性？
+
+// TODO
 
 在我的医疗设备健康平台项目中，Redis主要用于几个场景：
 
@@ -173,6 +183,8 @@ noeviction: 不淘汰数据
 
 
 ## 6. Redis有哪些持久化策略
+
+// TODO 差总结，精炼版
 
 Redis提供了两种主要的持久化策略来防止数据丢失：
 

@@ -157,25 +157,25 @@ Java HashMap 的 key 和 value 都可以为 null。其中，key 只允许一个 
 
 ## 8. hashmap是有序的吗？什么map是有序的
 
-
+// TODO
 
 
 
 ## 9. new Hashmap()初始底层数组长度是多少
 
-
+// TODO
 
 
 
 ## 10. new Hashmap(14)初始数组长度是多少
 
-
+// TODO
 
 
 
 ## 11. 为什么扩容是2倍
 
-
+// TODO
 
 
 
@@ -183,7 +183,7 @@ Java HashMap 的 key 和 value 都可以为 null。其中，key 只允许一个 
 
 ## 12. 为什么扩容因子是0.75
 
-
+// TODO
 
 
 
@@ -191,19 +191,19 @@ Java HashMap 的 key 和 value 都可以为 null。其中，key 只允许一个 
 
 ## 13. 什么时候链表会转成红黑树
 
-
+// TODO
 
 
 
 ## 14. 什么时候红黑树会转成链表
 
-
+// TODO
 
 
 
 ## 15. 为什么是6和8
 
-
+// TODO
 
 
 
@@ -211,13 +211,13 @@ Java HashMap 的 key 和 value 都可以为 null。其中，key 只允许一个 
 
 ## 16. 当数组长度少于64，链表长度大于8会怎么样
 
-
+// TODO
 
 
 
 ## 17. hashmap对key计算落到哪个桶是用取模运算吗？
 
-
+// TODO
 
 
 
@@ -225,7 +225,7 @@ Java HashMap 的 key 和 value 都可以为 null。其中，key 只允许一个 
 
 ## 18. 为什么要用红黑树？只用链表不行吗？要用树那为什么不是二叉树、平衡二叉树？
 
-
+// TODO
 
 
 
@@ -233,11 +233,7 @@ Java HashMap 的 key 和 value 都可以为 null。其中，key 只允许一个 
 
 ## 19. hashmap能直接做缓存吗？有没有不足的地方？
 
-
-
-
-
-
+// TODO
 
 
 
@@ -245,19 +241,19 @@ Java HashMap 的 key 和 value 都可以为 null。其中，key 只允许一个 
 
 ## 20. hashmap能根据value查询key吗？
 
-
+// TODO
 
 
 
 ## 21. hashmap能缩容吗
 
-
+// TODO
 
 
 
 ## 22. hashmap什么时候会导致死循环？那怎么解决？
 
-
+// TODO
 
 
 
@@ -265,7 +261,7 @@ Java HashMap 的 key 和 value 都可以为 null。其中，key 只允许一个 
 
 ## 23. 为什么hashmap需要重写key的hashcode和equals方法？
 
-
+// TODO
 
 
 
@@ -273,7 +269,7 @@ Java HashMap 的 key 和 value 都可以为 null。其中，key 只允许一个 
 
 ## 24. 你知道linkedhashmap吗？你知道它可以做什么吗
 
-
+// TODO
 
 
 
