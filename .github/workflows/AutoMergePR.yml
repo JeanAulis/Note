@@ -78,7 +78,7 @@ jobs:
             echo "✅ 条件符合，开始启用 auto-merge" | tee -a $LOG_FILE
             # 启用 auto-merge（merge 策略，使用 merge commit）
             # if gh pr merge $PR_NUMBER --auto --merge; then
-            if gh pr merge $PR_NUMBER --auto --squash; then
+            if gh pr merge $PR_NUMBER --auto --squash --delete-branch; then
               echo "✅ Auto-merge 已启用，GitHub 将持续监控并自动合并" | tee -a $LOG_FILE
             else
               echo "❌ 启用失败" | tee -a $LOG_FILE
