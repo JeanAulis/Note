@@ -7,6 +7,94 @@
       "status": "unpublished",
       "elements": [
         {
+          "id": "_HA65J7oxVBAmlEQaALAs",
+          "type": "text",
+          "x": 1291.7197300512366,
+          "y": 1132.8957727693603,
+          "width": 280.1227304971011,
+          "height": 50.28054610545026,
+          "angle": 5.73213322309113,
+          "strokeColor": "#ced4da",
+          "backgroundColor": "transparent",
+          "fillStyle": "solid",
+          "strokeWidth": 1,
+          "strokeStyle": "solid",
+          "roughness": 1,
+          "opacity": 100,
+          "groupIds": [],
+          "frameId": null,
+          "index": "b07",
+          "roundness": null,
+          "seed": 1797985868,
+          "version": 822,
+          "versionNonce": 2116657740,
+          "isDeleted": false,
+          "boundElements": [],
+          "updated": 1760259107447,
+          "link": null,
+          "locked": false,
+          "text": "By@Jean Aulis",
+          "fontSize": 40.22443688436024,
+          "fontFamily": 5,
+          "textAlign": "center",
+          "verticalAlign": "top",
+          "containerId": null,
+          "originalText": "By@Jean Aulis",
+          "autoResize": true,
+          "lineHeight": 1.25
+        }
+      ],
+      "id": "bG1e_lyM5717MlqP_4153",
+      "created": 1760259108999
+    },
+    {
+      "status": "unpublished",
+      "elements": [
+        {
+          "id": "3R-Zi9fC9nj2lfQ9zVs8B",
+          "type": "text",
+          "x": 1987.9975126319712,
+          "y": 778.922182823344,
+          "width": 139.27987670898438,
+          "height": 25,
+          "angle": 0,
+          "strokeColor": "#ced4da",
+          "backgroundColor": "transparent",
+          "fillStyle": "solid",
+          "strokeWidth": 1,
+          "strokeStyle": "solid",
+          "roughness": 1,
+          "opacity": 100,
+          "groupIds": [],
+          "frameId": null,
+          "index": "b06",
+          "roundness": null,
+          "seed": 901897716,
+          "version": 577,
+          "versionNonce": 396238452,
+          "isDeleted": false,
+          "boundElements": [],
+          "updated": 1760259064530,
+          "link": null,
+          "locked": false,
+          "text": "By@Jean Aulis",
+          "fontSize": 20,
+          "fontFamily": 5,
+          "textAlign": "center",
+          "verticalAlign": "top",
+          "containerId": null,
+          "originalText": "By@Jean Aulis",
+          "autoResize": true,
+          "lineHeight": 1.25
+        }
+      ],
+      "id": "P4mdNNZs-dXY9kxK-ND9m",
+      "created": 1760259065034
+    },
+    {
+      "status": "unpublished",
+      "elements": [
+        {
           "id": "kf6LuPae3RMLkH4zqxyMN",
           "type": "text",
           "x": 1679.8683220919365,
@@ -29,7 +117,7 @@
           "version": 374,
           "versionNonce": 146435756,
           "isDeleted": false,
-          "boundElements": null,
+          "boundElements": [],
           "updated": 1756954060856,
           "link": null,
           "locked": false,
@@ -51234,7 +51322,8 @@
           "link": null,
           "locked": false,
           "startBinding": null,
-          "endBinding": null
+          "endBinding": null,
+          "polygon": false
         },
         {
           "type": "line",
@@ -51337,7 +51426,8 @@
           "link": null,
           "locked": false,
           "startBinding": null,
-          "endBinding": null
+          "endBinding": null,
+          "polygon": false
         }
       ],
       "id": "vt8Y3vYwVLSGmBjeR3lwr",
@@ -52473,7 +52563,8 @@
           "link": null,
           "locked": false,
           "startBinding": null,
-          "endBinding": null
+          "endBinding": null,
+          "polygon": false
         },
         {
           "type": "line",
@@ -52684,7 +52775,8 @@
           "link": null,
           "locked": false,
           "startBinding": null,
-          "endBinding": null
+          "endBinding": null,
+          "polygon": false
         }
       ],
       "id": "HyTSjhPP_9Q4X4NRCmrNr",
@@ -52846,7 +52938,8 @@
           "boundElements": [],
           "updated": 1756953666755,
           "link": null,
-          "locked": false
+          "locked": false,
+          "polygon": false
         },
         {
           "type": "ellipse",
@@ -53559,7 +53652,8 @@
           "boundElements": [],
           "updated": 1756953666755,
           "link": null,
-          "locked": false
+          "locked": false,
+          "polygon": false
         },
         {
           "type": "ellipse",
@@ -55678,7 +55772,8 @@
           "boundElements": [],
           "updated": 1756953666756,
           "link": null,
-          "locked": false
+          "locked": false,
+          "polygon": false
         },
         {
           "type": "line",
@@ -55723,7 +55818,8 @@
           "boundElements": [],
           "updated": 1756953666756,
           "link": null,
-          "locked": false
+          "locked": false,
+          "polygon": false
         },
         {
           "type": "line",
@@ -55802,7 +55898,8 @@
           "boundElements": [],
           "updated": 1756953666756,
           "link": null,
-          "locked": false
+          "locked": false,
+          "polygon": false
         },
         {
           "type": "line",
@@ -55881,7 +55978,8 @@
           "boundElements": [],
           "updated": 1756953666756,
           "link": null,
-          "locked": false
+          "locked": false,
+          "polygon": false
         }
       ],
       "id": "HyKZrm8uhbSiCEB4JCcxM",
@@ -57882,7 +57980,7 @@
               10.535460903520184
             ],
             [
-              -1.1706067670574258,
+              -1.1706067670574267,
               10.769582256931677
             ],
             [
@@ -69638,7 +69736,8 @@
           "boundElements": [],
           "updated": 1756911245701,
           "link": null,
-          "locked": false
+          "locked": false,
+          "polygon": false
         },
         {
           "type": "line",
@@ -69697,7 +69796,8 @@
           "boundElements": [],
           "updated": 1756911245701,
           "link": null,
-          "locked": false
+          "locked": false,
+          "polygon": false
         },
         {
           "type": "line",
@@ -69760,7 +69860,8 @@
           "boundElements": [],
           "updated": 1756911245701,
           "link": null,
-          "locked": false
+          "locked": false,
+          "polygon": false
         }
       ],
       "id": "lYyGJ4gD2LCrAMzuLOc94",

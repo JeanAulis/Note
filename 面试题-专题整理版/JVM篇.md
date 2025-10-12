@@ -1,11 +1,3 @@
----
-title: JVM专场
-category: Java
-tag:
-  - 面试题:
-    - JVM
----
-
 [toc]
 
 ## 1.说一下jvm的内存区域,以及每个区域是干什么的
