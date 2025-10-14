@@ -4,9 +4,30 @@
 
 ## 1. 你说一下什么aop？你说一下实现aop的步骤？aop的底层实现原理是什么?
 
-// TODO
+AOP是面向切面编程，他的一个特点是无侵入，抽取可以复用的模块处理重复的逻辑，对一些方法的增强。
+
+步骤：
+
+- 首先需要引入Spring AOP依赖(spring-boot-starter-aop)
+- 定义切面类，使用`@Aspect`注解
+- 定义窃电表达式，使用`@Pointcut`注解
+- 定义通知方法，一般使用`@Around`（还有@Before、@After、@AfterReturning(后置通知)、@AfterThrowing(异常通知)）
+
+**原理：**
+
+SpringAOP的底层主要是通过**动态代理**技术实现的，主要是两种代理技术。一种是JDK的动态代理，而JDK的动态代理呢，有限制，只能针对于实现了接口的类做代理，所以，在spring中还有一种是Cglib动态代理，那Cglib动态代理呢，就没有这个限制。
 
 
+
+> [!important]
+>
+> 自定义注解：
+>
+> - 定义自定义注解
+>   - @Target({ElementType.METHOD, ElementType.TYPE}) // 可以加在方法或类上
+>   - @Retention(RetentionPolicy.RUNTIME) // 运行时有效，AOP需要用到
+>   - @Documented
+> - 
 
 ## 2. 你在项目中用aop实现什么功能？用的是什么通知？
 
