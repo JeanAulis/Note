@@ -217,4 +217,14 @@ Redis提供了两种主要的持久化策略来防止数据丢失：
 
 
 
-## 9. 
+## 9. 简述全量同步的流程?
+
+- slave节点请求增量同步
+- master节点判断replid,发现不一致,拒绝增量同步
+- master将完整内存数据生成RDB,发送RDB到slave
+- slave清空本地数据,加载master的RDB
+- master将RDB期间的命令记录在repl_baklog（环形数组）,并持续将log中的命令发送给slave
+
+repl_baklog是环形数组，接近顺序读写，性能高
+
+注意：repl_baklog大小有上限,写满后会覆盖最早的数据。如果slave断开时间过久,导致尚未备份的数据被覆盖,则无法基于log做增量同步,只能再次全量同步。

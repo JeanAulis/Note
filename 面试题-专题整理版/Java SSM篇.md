@@ -2,7 +2,7 @@
 
 ---
 
-## 1. 你说一下什么aop？你说一下实现aop的步骤？aop的底层实现原理是什么?
+## 1. 你说一下什么是aop？你说一下实现aop的步骤？aop的底层实现原理是什么?
 
 AOP是面向切面编程，他的一个特点是无侵入，抽取可以复用的模块处理重复的逻辑，对一些方法的增强。
 
@@ -10,7 +10,7 @@ AOP是面向切面编程，他的一个特点是无侵入，抽取可以复用�
 
 - 首先需要引入Spring AOP依赖(spring-boot-starter-aop)
 - 定义切面类，使用`@Aspect`注解
-- 定义窃电表达式，使用`@Pointcut`注解
+- 定义切面表达式，使用`@Pointcut`注解
 - 定义通知方法，一般使用`@Around`（还有@Before、@After、@AfterReturning(后置通知)、@AfterThrowing(异常通知)）
 
 **原理：**
@@ -24,14 +24,24 @@ SpringAOP的底层主要是通过**动态代理**技术实现的，主要是两�
 > 自定义注解：
 >
 > - 定义自定义注解
->   - @Target({ElementType.METHOD, ElementType.TYPE}) // 可以加在方法或类上
->   - @Retention(RetentionPolicy.RUNTIME) // 运行时有效，AOP需要用到
->   - @Documented
-> - 
+>   - @Target：指定注解可作用的元素（如ElementType.METHOD、ElementType.TYPE）。
+>   - @Retention：定义注解保留阶段（SOURCE、CLASS、RUNTIME）。
+>   - @Documented：注解包含在Javadoc中。
+>   - @Inherited：注解可被子类继承。
+>
+> 通过Java反射API（如Class.getAnnotations）在运行时读取注解信息，结合框架或自定义逻辑执行相应操作。
 
 ## 2. 你在项目中用aop实现什么功能？用的是什么通知？
 
-// TODO
+在项目中，AOP常用于：
+
+1. 日志记录：记录方法调用、参数、执行时间。
+2. 事务管理：自动提交或回滚数据库事务。
+3. 权限控制：验证用户权限或认证。
+4. 性能监控：统计方法执行耗时。
+5. 异常处理：统一捕获和处理异常。
+
+**环绕通知**（Around）：方法执行前后均可控制，如事务管理或性能监控。
 
 
 
@@ -69,15 +79,15 @@ SpringBoot的常用注解有：
 Spring的常用注解有
 
 和IOC相关的：
-@Component：注册：bean对象，一般用在方法类上
-@Bean：注册bean对象，一般用在方法上
-@Autowire：自动注入
+`@Component`：注册：bean对象，一般用在方法类上
+`@Bean`：注册bean对象，一般用在方法上
+`@Autowire`：自动注入
 
 和Web层相关的有: 
-@Controller：标记控制器
-@RequestMapping：映射请求资源和请求方法
-@RestController(包含@Controller和@ResponseBody)：用于返回JSON给前端
-@RequestBody：把请求体的JSON或者XML转换为java对象
+`@Controller`：标记控制器
+`@RequestMapping`：映射请求资源和请求方法
+`@RestController(`包含@Controller和@ResponseBody)：用于返回JSON给前端
+`@RequestBody`：把请求体的JSON或者XML转换为java对象
 
 
 
@@ -97,9 +107,9 @@ Spring的常用注解有
 
 优点是：
 
-自动装配：会自动装配Bean对象和配置类到SpringIoc容器，省去配置
+**自动装配**：会自动装配Bean对象和配置类到SpringIoc容器，省去配置
 
-起步依赖：引入起步依赖之后，通过Maven的依赖传递，将它需要的依赖也引入
+**起步依赖**：引入起步依赖之后，通过Maven的依赖传递，将它需要的依赖也引入
 
 
 
@@ -107,7 +117,7 @@ Spring的常用注解有
 
 >  [!Note]
 >
-> 第三方的依赖只需要META-INF中的spring.factories文件里声明这些类的全类路径，在项目的启动过程中就可以自动的找到这些配置文件解析它们，交给IOC容器管理
+> 第三方的依赖只需要加载META-INF中的spring.factories文件里声明这些类的全类路径，在项目的启动过程中就可以自动的找到这些配置文件解析它们，交给IOC容器管理
 
 SpringBoot的自动装配原理有三个核心部分：启动注解，自动装配入口和条件装配
 
@@ -119,7 +129,7 @@ SpringBoot的自动装配原理有三个核心部分：启动注解，自动装�
 
 ## 7. 你们项目是怎么处理异常的？你说一下怎么实现全局自定义异常处理器
 
-我们项目使用全局异常处理器
+我们项目使用全局异常处理器集中捕获、记录异常，返回统一错误响应
 
 >  [!tip]
 >
@@ -220,11 +230,7 @@ header.payload.signature
 
 - Bcrypt实现了自动加盐，有一个可调整的工作因子
 
-
-
 和JWT防篡改类似
-
-
 
 >  [!tip]
 >
@@ -253,9 +259,9 @@ header.payload.signature
 
 ## 12. 你们有做单元测试吗？怎么做单元测试的？
 
+简单的就使用Junit，常用的话还是Apifox
 
-
-
+![image-20251015180119832](./assets/image-20251015180119832.png)
 
 ## 13. @RestController和@Controller的区别
 
@@ -346,9 +352,16 @@ Spring是一个以IoC和AOP为核心的轻量级容器框架，目的是简化�
 
 Spring的DI注入主要有三种方式：
 
+1. 属性注入：
+2. 构造注入：解决不了循环依赖
+3. *Setter注入：基本不用
+4. 普通方法注入：
+
+---
+
 1. 构造函数注入：通过类的构造函数注入，适合强依赖，保证对象不可变性和完整性。
 2. Setter注入：通过Setter方法注入，适合可选依赖或需动态更新的场景。
-3. 字段注入：直接在字段上加`@Autowired`，虽然方便但隐藏依赖，不推荐生产代码。
+3. 字段注入：直接在字段上加`@Autowired`，虽然方便但隐藏依赖，~~不推荐生产代码~~。
 4. 还有方法注入
 
 在实际项目中，我们优先使用构造函数注入核心依赖，用Setter注入可选配置，避免字段注入以保证代码可测试性。
@@ -373,7 +386,14 @@ Spring的DI注入主要有三种方式：
 
 ## 19. 说一下bean的生命周期
 
-- 分为实例化、属性赋值、初始化、销毁这4个大阶段;
+- 分为**实例化**、**属性赋值**、**初始化**、**销毁**这4个大阶段;
+
+
+1. 实例化阶段：通过构造函数创建对象实例。 
+2. 属性注入阶段：注入对象的属性或依赖。
+3. 初始化阶段：调用初始化方法，实现接口和前后置通知。
+4. 使用阶段：将bean放入容器中，通过DI注入获取。
+5. 销毁阶段：关闭容器时，释放资源。
 
 - 再是初始化的具体操作,有Aware接口的依赖注入、BeanPostProcessor在初始化前后的处理以及InitializingBean和init-method的初始化操作;
 
@@ -401,25 +421,24 @@ Bean生命周期的主要阶段
 
 ### Spring如何解决循环依赖
 
-- **什么是循环依赖** 循环依赖是指在软件系统中，两个或多个组件相互依赖，形成一个闭环的依赖关系。
+**什么是循环依赖** 循环依赖是指在软件系统中，两个或多个组件相互依赖，形成一个闭环的依赖关系。
 
-  **Spring如何解决循环依赖** Spring主要通过**三级缓存**机制来解决循环依赖：
+**Spring如何解决循环依赖** Spring主要通过**三级缓存**机制来解决循环依赖：
 
-  1. **一级缓存(singletonObjects)** - 单例池，缓存已经经历了完整生命周期、已经初始化完成的Bean对象
-  2. **二级缓存(earlySingletonObjects)** - 缓存早期的Bean对象（生命周期还没有走完的半成品Bean）
-  3. **三级缓存(singletonFactories)** - 缓存ObjectFactory对象工厂，用来创建某个对象
+1. **一级缓存(singletonObjects)** - 单例池，缓存已经经历了完整生命周期、已经初始化完成的Bean对象
+2. **二级缓存(earlySingletonObjects)** - 缓存早期的Bean对象（生命周期还没有走完的半成品Bean）
+3. **三级缓存(singletonFactories)** - 缓存ObjectFactory对象工厂，用来创建某个对象
 
-  **详细解决过程：**
+**详细解决过程：**
 
-  1. **实例化A对象**：先实例化A对象，同时创建ObjectFactory对象存入三级缓存singletonFactories
-  2. **A初始化需要B**：A在初始化时需要注入B对象，触发B的创建逻辑
-  3. **实例化B对象**：B实例化完成，也会创建ObjectFactory对象存入三级缓存singletonFactories
-  4. **B需要注入A**：B初始化时需要注入A，通过三级缓存中的ObjectFactory生成A对象并存入二级缓存（可能是A的普通对象或代理对象）
-  5. **B创建完成**：B从二级缓存earlySingletonObjects获得A对象后完成注入，B创建成功并存入一级缓存singletonObjects
-  6. **A创建完成**：回到A对象初始化，因为B对象已创建完成，直接注入B，A创建成功存入一级缓存singletonObjects
-  7. **清理临时对象**：清除二级缓存中的临时A对象
-
-- B创建完成后，A也能完成创建
+1. **实例化A对象**：先实例化A对象，同时创建ObjectFactory对象存入三级缓存singletonFactories
+2. **A初始化需要B**：A在初始化时需要注入B对象，触发B的创建逻辑
+3. **实例化B对象**：B实例化完成，也会创建ObjectFactory对象存入三级缓存singletonFactories
+4. **B需要注入A**：B初始化时需要注入A，通过三级缓存中的ObjectFactory生成A对象并存入二级缓存（可能是A的普通对象或代理对象）
+5. **B创建完成**：B从二级缓存earlySingletonObjects获得A对象后完成注入，B创建成功并存入一级缓存singletonObjects
+6. **A创建完成**：回到A对象初始化，因为B对象已创建完成，直接注入B，A创建成功存入一级缓存singletonObjects
+7. **清理临时对象**：清除二级缓存中的临时A对象
+8. B创建完成后，A也能完成创建
 
 ### 构造注入的循环依赖问题
 
@@ -472,9 +491,3 @@ DispatcherServlet将ModelAndView传递给**ViewResolver**（视图解析器）�
 
 
 
-
-## 22. 
-
-
-
-## 23. 
