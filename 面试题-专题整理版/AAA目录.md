@@ -5,7 +5,7 @@
 1. Final有什么用
 2. 什么是重载（Overload）和重写（Override）?
 3. 重载的方法能否根据返回类型进行区分？
-4. ==和equals的区别？equals相等hashcode一定相等吗？hashcode相等equals一定相等吗？
+4. ==和equals的区别？equals相等hashcode一定相等吗？hashcode相等equals一定相等吗？什么场景需要重写equals和hashcode方法？具体怎么重写equals和hashcode方法？
 5. String和StringBuffer、StringBuilder的区别是什么？
 6. java中基本类型有哪些？
 7. 什么是反射？
