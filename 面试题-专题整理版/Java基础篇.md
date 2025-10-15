@@ -13,7 +13,7 @@
 
 ## 2. 什么是重载（Overload）和重写（Override） ?
 
-- **重载**呢是发生在同一个类里面，必须方法名相同，方法的参数列表必须不同**，也就是参数类型和个数还有顺序至少有一个不同，重载是通过方法参数来区分的，而不是通过返回类型。
+- **重载**呢是发生在同一个类里面，必须方法名相同，方法的参数列表必须不同，也就是参数类型和个数还有顺序至少有一个不同，重载是通过方法参数来区分的，而不是通过返回类型。
 - **重写**则发生在父子类中，方法名，参数列表必须相同。返回值、抛出的异常，小于等于父类，访问修饰符private<default<protect<public必须大于等于父类，当父类为private则不能重写
 
 
@@ -29,11 +29,15 @@
 - == 是判断两个对象的地址是不是相等，就是判断两个对象是不是同一个对象。对于基本数据类型：==比较的是值，应用数据类型 ： == 比较的是内存地址。
 - equals()：和==相同，比较的是内存地址，但是equals()可以被重写，对于字符串和包装类，使用equals()可以避免缓存陷阱
 
-一定。
+一定。Java规范要求equals相等的对象hashCode必须相等，以确保哈希表（如HashMap、HashSet）正确工作
 
-也不一定
+也不一定，因为存在哈希碰撞
 
-<font style="color:red">// TODO 见百度网盘面试日期：8.31</font>
+1. 当对象作为HashMap的键或存储在HashSet中时，需要重写equals和hashCode方法。 
+
+2. 重写equals的步骤包括检查对象是否为自身、检查对象类型是否匹配、比较关键字段是否相等。 
+
+3. 重写hashCode的方法通常使用Object.hashCode()方法，并结合对象的字段计算哈希值。
 
 
 
@@ -64,21 +68,34 @@
 
 反射就是允许程序在运行过程中动态地获取类的信息（成员变量、方法、构造器等）。
 
->  **反射**（Reflection）是 Java 提供的一种机制，允许程序在运行时动态地获取类的信息、创建对象、调用方法、访问字段等。反射使得 Java 程序能够在运行时获取类、方法、字段等元数据并进行操作，从而实现更灵活和动态的功能。
+>  反射（Reflection）是Java中一种运行时动态获取类信息和操作类或对象的功能。通过反射，可以获取类的结构（如方法、字段、构造器），动态调用方法或修改字段值。常用于框架开发（如Spring），但性能开销较高，需谨慎使用。
 
 >  [!tip]
 >
-> 获取class的方法
+>  获取class的方法
+>
+>  在Java中，获取`Class`对象的方法主要有以下三种：
+>
+>  1. **通过类名**：`Class<?> clazz = ClassName.class;`  
+>     直接使用类的字面量，适用于已知类名的情况。
+>
+>  2. **通过对象实例**：`Class<?> clazz = instance.getClass();`  
+>     从对象实例获取其对应的`Class`对象。
+>
+>  3. **通过全限定类名**：`Class<?> clazz = Class.forName("package.ClassName");`  
+>     动态加载类，需提供完整类路径，适用于运行时加载未知类。
+>
+>  注意：`Class.forName()`可能抛出`ClassNotFoundException`，需处理异常。
 
 
 
-## 8. (待整理)反射机制优缺点
+## 8. 反射机制优缺点
 
 优点： 运行期类型的判断，动态加载类，提高代码灵活度。
 
 缺点： 性能瓶颈：反射相当于一系列解释操作，通知 JVM 要做的事情，性能比直接的java代码要 慢很多
 
-<font style="color:red">// TODO</font>
+
 
 
 
@@ -90,7 +107,7 @@
 2. 在整合EMQ的时候 , 为了能够方便的接收订阅消息, 我们自定义了一个@Topic注解 , 作用在类上 , 之后我们通过反射获取类的字节码, 并且获取类上的@Topic注解, 读取到里面定义的主题 , 通过策略模式将不同主题的消息分发到不同的处理器中
 3. 除了上述之外, 在我们项目开发中经常使用的一些框架, 例如 : Mybatis , Spring , SpringMVC 等, 以及一些常用的工具库 common-utils , hutool工具库等都大量使用到了反射机制
 
-<font style="color:red">// TODO</font>
+<font style="color:blue">// TODO</font>
 
 
 
@@ -104,19 +121,23 @@
 
 - 如何使用？=> 使用`@Autowired`注解或者`ApplicationContext.getBean()`获取Bean
 
-- 要修改为多例，需要添加注释`@Scope("prototype")`
+- 要修改为多例，需要在@Component或@Bean上添加@Scope("prototype")注释
 
-<font style="color:red">// TODO</font>
+- 在@Configuration类中定义Bean时指定作用域。
+
+- 动态获取prototype Bean：使用ApplicationContext或ObjectFactory获取新实例。
 
 
 
 ## 11. Integer i1 = 127;Integer i2 = 127;i1==i2？Integer i3 = 128;Integer i4 = 128;i3==i4？int a = 128;Integer b = 128;a==b？Integer i = 128和new一个有什么区别？
 
-true，因为Integer会在缓存（Integer Cache）中保存-128~127的对象
+== 是判断两个对象的地址是不是相等，就是判断两个对象是不是同一个对象。对于基本数据类型：==比较的是值，应用数据类型 ： == 比较的是内存地址。
 
-false，超过了缓存范围
+true，缓存复用：因为Integer会在缓存（Integer Cache）中保存-128~127的对象
 
-相等。基本数据类型int和Integer用`==`比较时，Integer会自动拆箱为int，然后进行数值比较。
+false，超过了缓存范围，创建不同对象
+
+相等。拆箱比较值：基本数据类型int和Integer用`==`比较时，Integer会自动拆箱为int，然后进行数值比较。
 
 >  [!tip]
 >
@@ -140,11 +161,11 @@ false，超过了缓存范围
 
 ## 13. 说一下java的三大特性
 
-多态:多态是指同一个接口或方法在不同的对象上有不同的实现方式。包括方法重载（编译时多态）和方法重写（运行时多态）。
+多态: 多态是指同一个接口或方法在不同的对象上有不同的实现方式。包括方法重载（编译时多态）和方法重写（运行时多态）。
 
-封装:封装是将数据（属性）和操作数据的方法（行为）结合在一起，并对外隐藏对象的内部实现细节。通过访问修饰符（public、private、protected）来控制对类成员的访问权限。
+封装: 封装是将数据（属性）和操作数据的方法（行为）结合在一起，并对外隐藏对象的内部实现细节。通过访问修饰符（public、private、protected）来控制对类成员的访问权限。
 
-继承:继承允许一个类（子类/派生类）获得另一个类（父类/基类）的属性和方法，实现代码重用。Java使用`extends`关键字实现继承。
+继承: 继承允许一个类（子类/派生类）获得另一个类（父类/基类）的属性和方法，实现代码重用。Java使用`extends`关键字实现继承。
 
 
 
@@ -186,32 +207,11 @@ false，超过了缓存范围
 
 最直接的方式：**手写构造函数 / 工厂方法**复制所有字段，包括引用类型。
 
-**优点：**
-
-- 可控性强、性能高。
-- 无需序列化依赖。
-
-**缺点：**
-
-- 对象字段多时代码冗长。
-- 一旦类结构变动，要同步修改。
-
 ---
 
 2. 实现 `Cloneable` 接口并重写 `clone()`
 
 Java 自带的“拷贝接口”，但默认是**浅拷贝**，要自己递归修改成深拷贝。
-
-**优点：**
-
-- 不用引入额外库。
-- 支持复杂嵌套结构。
-
-**缺点：**
-
-- `Cloneable` 本身设计不优雅。
-- `clone()` 是受保护方法、语义混乱。
-- 需要处理 `CloneNotSupportedException`。
 
 > ✅ 实际项目中推荐自定义 `deepClone()` 方法而不是直接复用 `clone()`。
 
@@ -221,57 +221,23 @@ Java 自带的“拷贝接口”，但默认是**浅拷贝**，要自己递归�
 
 利用序列化的特性把对象完全转成字节流再还原，可实现真正意义上的深拷贝。
 
-（1）Java原生序列化（`Serializable`）
+将对象序列化为字节流，再反序列化生成新对象。
+
+
 
 - [x] 会不会触发构建方法
 
 **不会**
 
-**优点：**
 
-- 代码最简单。
-- 支持任意复杂对象结构。
-
-**缺点：**
-
-- 必须实现 `Serializable`。
-- 性能较低。
-
-~~（2）使用第三方库（如 Apache Commons Lang）~~
-
-Apache Commons Lang 提供了 `SerializationUtils.clone()` 方法，内部也是序列化实现。
-
-**优点：**
-
-- 一行搞定。
-- 简洁可靠。
-
-**缺点：**
-
-- 依赖外部库。
-
----
-
-4. 使用 JSON 序列化（简便、兼容性强）
-
-常用于前后端交互对象复制，比如用 `Jackson` 或 `Gson`。
-
-**优点：**
-
-- 简单直观。
-- 不依赖 `Serializable`。
-- 兼容多语言对象结构。
-
-**缺点：**
-
-- 序列化/反序列化性能一般。
-- 丢失 transient 字段或类型信息（复杂泛型不建议）。
 
 
 
 ## 15. stream流你熟悉吗？说一下常用的api？
 
 熟悉。常用的一些api有map()对一些对象进行映射，collect()收集Stream流，filter对一些元素进行过滤，sorted()排序，distinct()去重，forEach()遍历循环元素，limit()取前几个元素，skip()跳过前几个元素，count()统计个数，还有最大值最小值max()、min()。大概这些常用的api。
+
+- stream()：从集合创建流。
 
 - map()对一些对象的属性做映射
 - filter()：按条件过滤元素
@@ -282,3 +248,15 @@ Apache Commons Lang 提供了 `SerializationUtils.clone()` 方法，内部也是
 - forEach()：循环遍历元素
 - sorted()：排序
 - count()、max()、min()
+
+
+
+## 16. java常见的集合类有哪些
+
+Map接口和Collection接口是所有集合框架的父接口： 
+
+1. Collection接口的子接口包括：Set接口和List接口 
+2. Map接口的实现类主要有：HashMap、TreeMap、Hashtable、ConcurrentHashMap以及 Properties等 
+3. Set接口的实现类主要有：HashSet、TreeSet、LinkedHashSet等 
+4. List接口的实现类主要有：ArrayList、LinkedList、Stack以及Vector等
+
