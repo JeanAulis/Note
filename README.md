@@ -30,3 +30,12 @@
     Back To Top
   </a>
 </p>
+
+
+## 来源
+
+---
+
+[JavaGuide](https://github.com/Snailclimb/JavaGuide/blob/main/docs/system-design/framework/mybatis/mybatis-interview.md)等等
+
+还有许多内容来源于网络收集，以及AI，本人只是互联网上的搬运工～
