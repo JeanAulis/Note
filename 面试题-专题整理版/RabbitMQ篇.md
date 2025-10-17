@@ -162,10 +162,12 @@
 
 // TODO 等面试视频
 
+死信交换机（DLX）是RabbitMQ中用来处理无法被正常消费的消息的一种机制。
+
 当一个队列中的消息满足下列情况之一时,可以成为<span style="color: red;">死信(dead Letter):</span>
 
 - 消费者返回reject或者nack,且requeue参数设置为false（拒接消费）
-- 消息超时未消费
+- 消息设置了TTL但超时未被消费
 - 队列满了
 
 如果该队列配置了dead-letter-exchange属性,指定了一个交换机,那么队列中的死信就会投递到这个交换机中,而
