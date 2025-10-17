@@ -99,29 +99,43 @@ Spring的常用注解有
 
 后端再选择保存到本地还是阿里的OSS，如果上传到阿里的OSS的话，就需要进行额外的配置（获取 AccessKey）Bucket，域名等配置
 
-// TODO
-
 
 
 ## 6. springboot的优点是什么？说一下SpringBoot自动装配原理
 
-优点是：
+优点(前三个即可)是：
 
 **自动装配**：会自动装配Bean对象和配置类到SpringIoc容器，省去配置
 
 **起步依赖**：引入起步依赖之后，通过Maven的依赖传递，将它需要的依赖也引入
 
-内嵌tomcat
+**内嵌Servlet容器（Tomcat/Jetty）**：
+
+~~**简化开发**~~
 
 缺点：
 
-屏蔽底层细节，对理解不好
+屏蔽底层细节，Spring Boot 自动装配虽然方便，但很多配置是默认的
+
+> [!tip]
+>
+> Spring Boot 的优点是简化配置、快速开发、开箱即用；但它也有一些缺点。
+>  首先，自动装配屏蔽了很多底层细节，出问题时不容易排查。
+>  其次，自动扫描加载的配置类较多，启动速度偏慢，占用内存较高。
+>  再者，Spring Boot 的依赖版本被强绑定，灵活性不高，想单独升级某个依赖比较麻烦。
+>  另外，当项目需要做复杂定制时，反而要深入研究自动装配机制，配置不如传统 Spring 那么直观。
+>  最后，由于它采用可执行 jar 的打包方式，体积较大，不太适合极端轻量环境。
 
 自动装配的核心思想是**“约定大于配置”**，根据依赖自动导入配置好的相关配置
 
 >  [!Note]
 >
-> 第三方的依赖只需要加载META-INF中的spring.factories文件里声明这些类的全类路径，在项目的启动过程中就可以自动的找到这些配置文件解析它们，交给IOC容器管理
+>  项目启动时，`@SpringBootApplication` 注解会触发 `@EnableAutoConfiguration`，而它会通过 `AutoConfigurationImportSelector` 从 `META-INF/spring.factories`中加载所有以 `xxxAutoConfiguration` 结尾的配置类。
+>   这些配置类使用 `@ConditionalOnClass`、`@ConditionalOnMissingBean` 等条件注解来判断是否需要装配对应的 Bean。
+>
+>  ---
+>
+>  第三方的依赖只需要加载META-INF中的spring.factories文件里声明这些类的全类路径，在项目的启动过程中就可以自动的找到这些配置文件解析它们，交给IOC容器管理
 
 SpringBoot的自动装配原理有三个核心部分：启动注解，自动装配入口和条件装配
 
@@ -205,7 +219,7 @@ SpringBoot的自动装配原理有三个核心部分：启动注解，自动装�
 >
 >  - Refresh Token：有效期很长，比如7天，用来在Access Token过期后获取新的Access Token。
 >
->  如果是关于登陆认证（比当前问题范围大一些），需要回答双token三认证：基于双token，如果用户退出登陆，马上把Refresh token加入Redis的黑名单，再次登陆时先检查是否在黑名单，如果不在，判断它是否过期，如果一切正常，才下发Access Token
+>  如果是关于登陆认证（比当前问题范围大一些），需要回答双token三认证：对于双token三认证，在刚刚的基础上，我们加了一个单次使用的Refresh Token（长token）来刷新token，用户就可以无感登陆；我们把这个长token存入Redis，并且设置一个24小时的过期时间，当用户的短token过期时，去Redis查询是否存在，如果存在的话，说明已经过期或者被使用，后端就会拒绝刷新令牌操作，强制用户登录。如果还存在的话，我们就刷新短token，并且刷新对应的长token。
 
 
 
@@ -266,6 +280,8 @@ header.payload.signature
 简单的就使用Junit，常用的话还是Apifox
 
 ![image-20251015180119832](./assets/image-20251015180119832.png)
+
+
 
 ## 13. @RestController和@Controller的区别
 
