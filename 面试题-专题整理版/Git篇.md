@@ -40,6 +40,7 @@
 > <footer>
 > ```
 >
+> ```tex
 > feat(module): 新增功能  
 > fix(module): 修复bug  
 > docs(module): 文档修改  
@@ -50,6 +51,7 @@
 > chore(module): 构建或依赖变更  
 > build(module): 构建系统改动  
 > ci(module): CI/CD流程调整
+> ```
 >
 > | 类型         | 说明                                         |
 > | ------------ | -------------------------------------------- |

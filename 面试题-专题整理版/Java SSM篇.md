@@ -93,9 +93,9 @@ Spring的常用注解有
 
 ## 5. 你说一下前后端怎么实现上传文件的步骤
 
-前端建立一个`form`表单，使用`<input type="file">`来选择文件，再通过`XMLHttpRequest`或者`fetch`来提交`POST`请求（以后学到进度条了可以加进去，大文件跟踪上传进度）
+前端建立一个`form`表单，使用`<input type="file">`来选择文件，设置`multipart/form-data`头，再通过`XMLHttpRequest`或者`fetch`来提交`POST`请求（以后学到进度条了可以加进去，大文件跟踪上传进度）
 
-后端使用`@RequestParam MultipartFile file`类型来接收文件
+后端使用`@PostMapping MultipartFile file`类型来接收文件
 
 后端再选择保存到本地还是阿里的OSS，如果上传到阿里的OSS的话，就需要进行额外的配置（获取 AccessKey）Bucket，域名等配置
 
@@ -111,7 +111,11 @@ Spring的常用注解有
 
 **起步依赖**：引入起步依赖之后，通过Maven的依赖传递，将它需要的依赖也引入
 
+内嵌tomcat
 
+缺点：
+
+屏蔽底层细节，对理解不好
 
 自动装配的核心思想是**“约定大于配置”**，根据依赖自动导入配置好的相关配置
 
@@ -487,7 +491,6 @@ DispatcherServlet将ModelAndView传递给**ViewResolver**（视图解析器）�
 ### 7. 响应返回阶段
 
 最终的响应内容通过DispatcherServlet返回给客户端浏览器。
-
 
 
 

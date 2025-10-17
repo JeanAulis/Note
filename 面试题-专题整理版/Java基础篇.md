@@ -51,18 +51,18 @@
 
 ## 6. java中基本类型有哪些？
 
-| 基本类型  | 包装类      | 示例                   |
-| :-------- | :---------- | :--------------------- |
-| `byte`    | `Byte`      | `Byte b = 100;`        |
-| `short`   | `Short`     | `Short s = 500;`       |
-| `int`     | `Integer`   | `Integer i = 1000;`    |
-| `long`    | `Long`      | `Long l = 10000L;`     |
-| `float`   | `Float`     | `Float f = 3.14f;`     |
-| `double`  | `Double`    | `Double d = 3.14;`     |
-| `char`    | `Character` | `Character c = 'A';`   |
-| `boolean` | `Boolean`   | `Boolean flag = true;` |
+| 基本类型  | 包装类      | 描述                                                | 占用字节数 |
+| :-------- | :---------- | --------------------------------------------------- | :--------- |
+| `byte`    | `Byte`      | 8 位有符号整数                                      | 1          |
+| `short`   | `Short`     | 32 位有符号整数                                     | 2          |
+| `int`     | `Integer`   | 64 位有符号整数                                     | 4          |
+| `long`    | `Long`      | 32 位单精度浮点数 (IEEE 754)                        | 8          |
+| `float`   | `Float`     | 64 位双精度浮点数 (IEEE 754)                        | 4          |
+| `double`  | `Double`    | 64 位双精度浮点数 (IEEE 754)                        | 8          |
+| `char`    | `Character` | 16 位 Unicode 字符                                  | 2          |
+| `boolean` | `Boolean`   | 逻辑值，只有 $\text{true}$ 和 $\text{false}$ 两个值 | 1          |
 
-
+> 对于boolean占用字节数：虚拟机规范中没有明确规定，但通常被认为占用 1 个字节（或一个 $\text{int}$ 的空间用于数组中的存储）
 
 ## 7. 什么是反射？
 
@@ -260,3 +260,12 @@ Map接口和Collection接口是所有集合框架的父接口：
 3. Set接口的实现类主要有：HashSet、TreeSet、LinkedHashSet等 
 4. List接口的实现类主要有：ArrayList、LinkedList、Stack以及Vector等
 
+
+
+## 17. 什么是 Java 泛型
+
+- 泛型的主要目的是实现**类型参数化**，java 在定义类、定义接口、定义方法时都支持泛型
+- 泛型的好处有
+
+- 提供编译时类型检查，避免运行时类型转换错误，提高代码健壮性
+- 设计更通用的类型，提高代码通用性

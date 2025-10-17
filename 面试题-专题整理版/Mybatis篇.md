@@ -83,9 +83,3 @@ MyBatis 提供了 9 种动态 sql 标签:
 - [ ] 执行原理
 
 
-
-## 来源
-
----
-
-[JavaGuide](https://github.com/Snailclimb/JavaGuide/blob/main/docs/system-design/framework/mybatis/mybatis-interview.md)
