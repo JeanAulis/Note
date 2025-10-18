@@ -43,9 +43,15 @@
 
 ## 5. String和StringBuffer、StringBuilder的区别是什么？
 
-- String具有不可变性：String类中使用字符串数组保存字符串，所以String对象是不可变的，StringBuilder与StringBuffer这两种对象是可变的（底层实现的是动态扩容的char[]）
-- 线程安全：String因为其不可变，天然线程安全。StringBuffer对方法加了同步锁或者对调用的方法加了同步锁，所以是线程安全的。StringBuilder并没有对方法进行加同步锁，所以是非线程安全的。
-- 性能：每次对String类型进行改变的时候，都会生成一个新的String对象，然后将指针指向新的String对象。StringBuffer每次都会对StringBuffer对象本身进行操作，而不是生成新的对象并改变对象引用。StringBuilder相比使用StringBuffer而言效率更高。
+- String具有不可变性：底层通过一个 final 的字符数组保存内容，所以String对象是不可变的，StringBuilder与StringBuffer这两种对象是可变的（底层实现的是动态扩容的char[]）
+- 线程安全：String因为其不可变，天然线程安全。StringBuffer对方法加了同步锁`synchronized`或者对调用的方法加了同步锁，所以是线程安全的。StringBuilder并没有对方法进行加同步锁，所以是非线程安全的。
+- 性能：每次对String类型进行改变的时候，都会生成一个新的String对象，然后将指针指向新的String对象，性能较差。StringBuffer每次都会对StringBuffer对象本身进行操作，而不是生成新的对象并改变对象引用。StringBuilder相比使用StringBuffer而言效率更高。
+
+> StringBuilder（extends AbstractStringBuilder）中几乎所有的修改方法返回值都是this，这样就可以链式调用。**流式（Fluent）接口设计思想**
+>
+> StringBuffer也是（extends AbstractStringBuilder），和StringBuilder一致，只是所有方法都加了`synchronized`
+>
+>  **建造者模式 (Builder Pattern)**
 
 
 
@@ -200,30 +206,6 @@ false，超过了缓存范围，创建不同对象
 > 1. **手动深度复制**：通过手动复制每个属性，确保引用类型的属性是通过新对象来复制。
 > 2. **序列化**和**反序列化**：使用 `ByteArrayOutputStream` 和 `ObjectInputStream` 将对象转化为字节流，再反序列化回新对象，从而实现深度复制。性能差。
 > 3. **工具库**：使用 Apache Commons Lang 提供的 `SerializationUtils` 来简化深度复制的实现。
-
----
-
-1. 手动实现（推荐在性能敏感的场景中使用）
-
-最直接的方式：**手写构造函数 / 工厂方法**复制所有字段，包括引用类型。
-
----
-
-2. 实现 `Cloneable` 接口并重写 `clone()`
-
-Java 自带的“拷贝接口”，但默认是**浅拷贝**，要自己递归修改成深拷贝。
-
-> ✅ 实际项目中推荐自定义 `deepClone()` 方法而不是直接复用 `clone()`。
-
----
-
-3.  通过序列化实现（最通用、但性能略低）
-
-利用序列化的特性把对象完全转成字节流再还原，可实现真正意义上的深拷贝。
-
-将对象序列化为字节流，再反序列化生成新对象。
-
-
 
 - [x] 会不会触发构建方法
 
