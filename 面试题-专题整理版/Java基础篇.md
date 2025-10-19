@@ -46,7 +46,7 @@
 
 ## 5. String和StringBuffer、StringBuilder的区别是什么？
 
-- String具有不可变性：底层通过一个 final 的字符数组保存内容，所以String对象是不可变的，StringBuilder与StringBuffer这两种对象是可变的（底层实现的是动态扩容的char[]）
+- String具有不可变性：底层通过一个 final 的字符数组保存内容（JDK 9 开始 String 的底层是 byte[] 而不是 char[]），所以String对象是不可变的，StringBuilder与StringBuffer这两种对象是可变的（底层实现的是动态扩容的char[]）
 - 线程安全：String因为其不可变，天然线程安全。StringBuffer对方法加了同步锁`synchronized`或者对调用的方法加了同步锁，所以是线程安全的。StringBuilder并没有对方法进行加同步锁，所以是非线程安全的。
 - 性能：每次对String类型进行改变的时候，都会生成一个新的String对象，然后将指针指向新的String对象，性能较差。StringBuffer每次都会对StringBuffer对象本身进行操作，而不是生成新的对象并改变对象引用。StringBuilder相比使用StringBuffer而言效率更高。
 
@@ -248,16 +248,17 @@ false，超过了缓存范围，创建不同对象
 Map接口和Collection接口是所有集合框架的父接口： 
 
 1. Collection接口的子接口包括：Set接口和List接口 
-2. Map接口的实现类主要有：HashMap、TreeMap、Hashtable、ConcurrentHashMap以及 Properties等 
-3. Set接口的实现类主要有：HashSet、TreeSet、LinkedHashSet等 
-4. List接口的实现类主要有：ArrayList、LinkedList、Stack以及Vector等
+2. Set接口的实现类主要有：HashSet、TreeSet、LinkedHashSet等 
+3. List接口的实现类主要有：ArrayList、LinkedList、~~Stack以及Vector~~等
+4. Map接口的实现类主要有：HashMap、TreeMap、Hashtable、ConcurrentHashMap以及 Properties等 
 
 
 
 ## 17. 什么是 Java 泛型
 
 - 泛型的主要目的是实现**类型参数化**，java 在定义类、定义接口、定义方法时都支持泛型
-- 泛型的好处有
+
+泛型的好处有
 
 - 提供编译时类型检查，避免运行时类型转换错误，提高代码健壮性
 - 设计更通用的类型，提高代码通用性
