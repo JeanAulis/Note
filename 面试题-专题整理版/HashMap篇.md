@@ -390,7 +390,7 @@ new Arraylist()的初始容量是0，当第一次添加元素的时候会进行�
 
 - 可以使用`Collections.synchronizedList()`方法，把普通的List包装成线程安全的同步List。例如： `List list = Collections.synchronizedList(new ArrayList<>());` 这种方式通过同步锁（synchronized）实现，适合线程少、并发低的场景。
 
-- 使用 **`CopyOnWriteArrayList`**，它是一个线程安全的 `List` 实现，写入时会复制一个新的数组，适合读多写少的场景。
+- 使用 **`CopyOnWriteArrayList`**，它是一个线程安全的 `List` 实现，写入时会复制一个新的数组，适合读多写少的场景。<font style="color:orange">写性能差。</font>
 
 
 - Vector：但它的所有方法都通过synchronized修饰，性能较低，现在已经不推荐使用。
@@ -408,8 +408,8 @@ new Arraylist()的初始容量是0，当第一次添加元素的时候会进行�
 ## 32. 如何实现list和数组的互转
 
 list转数组：
-list.toArray，为了类型安全和性能，更推荐使用 `list.toArray(new String[0])`。
+**list.toArray**，为了类型安全和性能，更推荐使用 `list.toArray(new String[0])`。
 
 数组转list：
-Arrays.asList()：`Arrays.asList()` 返回的 `List` 是一个**固定大小的**，不支持添加或删除操作。
+**Arrays.asList()**：`Arrays.asList()` 返回的 `List` 是一个**固定大小的**，不支持添加或删除操作。
 使用stream流的collect
