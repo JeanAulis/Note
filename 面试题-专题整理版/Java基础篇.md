@@ -108,7 +108,7 @@
 
 
 
-## 9. (待整理)在你进行项目开发的过程中有没有用到过反射 
+## 9. (fuck)在你进行项目开发的过程中有没有用到过反射 
 
 在我们的项目中经常会使用反射 + 自定义注解的方式去实现一些功能 , 例如 : 
 
@@ -128,7 +128,7 @@
 
 - 作用域有五种常用的有`singeton`和`prototype`
 
-> 
+> <font style="color:red">// TODO 其他</font>
 
 - 如何使用？=> 使用`@Autowired`注解或者`ApplicationContext.getBean()`获取Bean
 - 要修改为多例，需要在@Component或@Bean上添加@Scope("prototype")注释

@@ -3,7 +3,7 @@
 
 ## JVM篇 (共15题)
 
-1. 说一下jvm的内存区域,以及每个区域是干什么的
+1. <font style="color:red">说一下jvm的内存区域,以及每个区域是干什么的</font>
 2. <font style="color:red">说一下常见的垃圾收集算法以及他们的特点是什么</font>
 3. <font style="color:red">说一下常见的垃圾收集器以及他们的特点是什么</font>
 4. <font style="color:red">说一下cms的各个阶段过程以及特点(5个阶段)</font>
@@ -130,14 +130,14 @@
 1. 说一下悲观锁和乐观锁的区别？还有行锁和表锁的区别？什么时候会上表锁？什么时候会上行锁？
 2. 什么是死锁？造成死锁的原因是什么？怎么解决死锁？
 3. 项目中使用分布式锁场景及Redisson原理
-4. 说一下synchronized和ReentrantLock的区别？synchronized可以作用在哪些地方？锁的是什么？说一下synchronized的锁升级？可逆吗？
+4. <font style="color:red">说一下synchronized和ReentrantLock的区别？synchronized可以作用在哪些地方？锁的是什么？说一下synchronized的锁升级？可逆吗？</font>
 5. synchronized底层原理
 6. 【追问】 synchronized 锁升级
 
 ## Redis篇 (共9题)
 
 1. 说一下缓存三兄弟/剑客分别造成的原因和解决方案？
-2. redis的常用数据类型有哪些？分别适用哪些场景？
+2. <font style="color:red">redis的常用数据类型有哪些？分别适用哪些场景？</font>
 3. redis为什么这么快？
 4. 说一下redis的缓存淘汰策略? 说一下redis的过期策略?
 5. 项目中一般用redis来做什么？做缓存的情况下那你们怎么保证数据库和缓存的的一致性？
@@ -152,7 +152,7 @@
 2. 有了解过volatile关键字吗？他的作用是什么？
 3. 线程和进程的区别?说一下线程有哪些状态?说一下java线程有哪些状态？怎么杀死一个线程？
 4. 实现多线程有哪些方式？什么是守护和非守护线程？
-5. sleep和wait的区别？notify和notifyall的区别？
+5. <font style="color:red">sleep和wait的区别？notify和notifyall的区别？</font>
 6. 你知道本地线程变量吗？你在项目中用它来做什么？使用上一般要注意什么？
 7. <font style="color:blue">什么是线程安全？怎么解决线程安全问题？</font>
 8. 线程池的作用是什么？
@@ -172,7 +172,7 @@
 
 ## Mysql篇 (共24题)
 
-1. 内连接和外连接有什么区别，内连接和外连接的连接条件能放在on和where吗？
+1. <font style="color:red">内连接和外连接有什么区别，内连接和外连接的连接条件能放在on和where吗？</font>
 2. char和varchar的区别
 3. 说一下事务的隔离级别有哪些？分别解决了什么问题？mysql是什么隔离级别，oracle呢？那不可重复读,脏读,幻读是什么?
 4. 说一下mysql的存储引擎有哪些？说一下InnoDB和MyISAM的区别？
@@ -249,7 +249,7 @@
 6. 怎么保证mq不丢消息？
 7. 你们项目怎么解决mq的消息积压？
 8. mq如何保证消费的有序性？
-9. 你项目中怎么保证mq的消费幂等性？
+9. <font style="color:red">你项目中怎么保证mq的消费幂等性？</font>
 10. 你有做过页面防抖吗？怎么实现？（比如在页面下单重复点了两次下单按钮）
 
 ## HashMap篇 (共32题)
@@ -285,16 +285,16 @@
 29. new Arraylist()数组初始长度是多少，说一下Arraylist的扩容机制
 30. Arraylist和Linkedlist是线程安全的吗？要线程安全怎么办
 31. 能不能一边循环一边执行删除list的数据？
-32. 如何实现list和数组的互转
+32. <font style="color:red">如何实现list和数组的互转</font>
 
 ## Mybatis篇 (共6题)
 
 1. mybatis的#和$的区别
 2. 介绍一下mybatis的一级和二级缓存
-3. （else）xml 映射文件中，除了常见的 select、insert、update、delete 标签之外，还有哪些标签？
-4. （else）MyBatis 执行批量插入，能返回数据库主键列表吗？
-5. （else）MyBatis 是如何进行分页的？分页插件的原理是什么？
-6. （else）MyBatis 动态 sql 是做什么的？都有哪些动态 sql？能简述一下动态 sql 的执行原理不？
+3. <font style="color:rgb(142,118, 96)">（else）xml 映射文件中，除了常见的 select、insert、update、delete 标签之外，还有哪些标签？</font>
+4. <font style="color:rgb(142,118, 96)">（else）MyBatis 执行批量插入，能返回数据库主键列表吗？</font>
+5. <font style="color:rgb(142,118, 96)">（else）MyBatis 是如何进行分页的？分页插件的原理是什么？</font>
+6. <font style="color:rgb(142,118, 96)">（else）MyBatis 动态 sql 是做什么的？都有哪些动态 sql？能简述一下动态 sql 的执行原理不？</font>
 
 ## 算法篇 (共1题)
 
