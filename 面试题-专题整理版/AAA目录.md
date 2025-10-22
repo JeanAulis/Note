@@ -132,7 +132,7 @@
 3. 项目中使用分布式锁场景及Redisson原理
 4. 说一下synchronized和ReentrantLock的区别？synchronized可以作用在哪些地方？锁的是什么？说一下synchronized的锁升级？可逆吗？
 5. synchronized底层原理
-6. 4【追问】 synchronized 锁升级
+6. 【追问】 synchronized 锁升级
 
 ## Redis篇 (共9题)
 
