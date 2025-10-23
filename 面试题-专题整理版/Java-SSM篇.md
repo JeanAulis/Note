@@ -53,6 +53,7 @@ SpringAOP的底层主要是通过**动态代理**技术实现的，主要是两�
 3. ~~权限控制：验证用户权限或认证。~~
 4. 性能监控：统计方法执行耗时。
 5. 异常处理：统一捕获和处理异常。
+6. 数据脱敏
 
 **环绕通知**（Around）：方法执行前后均可控制，如事务管理或性能监控。
 
@@ -74,6 +75,16 @@ SpringAOP的底层主要是通过**动态代理**技术实现的，主要是两�
 4. 创建启动类文件，加上@SringBootApplication注解，还有main方法实现SpringBootApplication.run(类名.class,args)方法
 
 常用的版本是2.7.x，因为兼容Java8/11
+
+> [!important]
+>
+> **dependencyManagement**
+>
+> 只声明版本，不实际引入依赖
+>
+> **dependencies**
+>
+> 实际引入依赖到项目
 
 
 
@@ -187,6 +198,8 @@ SpringBoot的自动装配原理有三个核心部分：启动注解，自动装�
 过滤器(Filter)是基于Servlet规范，FilterChain，责任链设计。拦截进入Selrvlet但未进入Spring容器的请求，可以拦截到方法的请求和响应，常用来做：过滤敏感词汇（防止sql注入），设置字符编码，URL级别的权限访问控制，压缩响应信息等。
 
 拦截器(Interceptor)基于Spring AOP的思想实现，只拦截Controller的请求，需要重写`HandlerInterceptor`接口可以在方法执行前(preHandle)，执行后(afterCompletion)进行操作，还有回调操作(postHandle)。常用来做：日志记录，性能监控。
+
+<font style="color:red">优先级？</font>
 
 >   [!caution]
 >
@@ -493,11 +506,12 @@ Spring主要通过**三级缓存**机制来解决循环依赖：
 >
 >  beanfactory和factorybean的区别
 >
->  - BeanFactory 是 Spring 容器的顶层接口，用来管理 Bean 的生命周期和依赖。
+>  - BeanFactory 是 Spring 容器的顶层接口，用来管理 Bean 的生命周期和依赖。自定义生成bean。
 >
->  - FactoryBean 是一个特殊的 Bean，它本身是一个工厂，用于创建复杂 Bean 对象。
+>  - FactoryBean 是一个特殊的 Bean，它本身是一个工厂，用于创建复杂 Bean 对象。（接口？）
 >
->    当容器中遇到 FactoryBean 时，默认获取的是它创建的对象（getObject() 返回值），只有加上 & 前缀时才是 FactoryBean 自身。
+>
+>  当容器中遇到 FactoryBean 时，默认获取的是它创建的对象（getObject() 返回值），只有加上 & 前缀时才是 FactoryBean 自身。
 
 
 
