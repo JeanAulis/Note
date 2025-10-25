@@ -72,22 +72,52 @@ public class Application {
 
 
 
-save
+## Mapper 层常用 API
 
-savebatch
+`insert(T entity)`：插入一条记录。
 
-insert
+`deleteById(Serializable id)`：根据主键删除。
 
-update
+`deleteByMap(Map<String, Object> columnMap)`：根据 columnMap 条件删除。
 
-delete
+`delete(Wrapper<T> wrapper)`：根据条件构造器删除。
 
-select
+`updateById(T entity)`：根据主键更新。
 
-get
+`update(T entity, Wrapper<T> updateWrapper)`：根据条件构造器更新。
 
-list
+`selectById(Serializable id)`：根据主键查询。
+
+`selectBatchIds(Collection<? extends Serializable> idList)`：根据主键集合查询。
+
+`selectByMap(Map<String, Object> columnMap)`：根据 Map 条件查询。
+
+`selectOne(Wrapper<T> queryWrapper)`：根据条件查询单条数据。
+
+`selectCount(Wrapper<T> queryWrapper)`：根据条件统计数量。
+
+`selectList(Wrapper<T> queryWrapper)`：根据条件查询列表。
+
+`selectPage(IPage<T> page, Wrapper<T> queryWrapper)`：分页查询。
 
 
 
-注册中心，配置中心、网关、openfeign
+## Wrapper
+
+`eq("name", "Tom")`：等于。
+
+`ne("status", 1)`：不等于。
+
+`gt("age", 18)`：大于。
+
+`lt("age", 30)`：小于。
+
+`between("age", 18, 30)`：区间。
+
+`like("name", "Tom")`：模糊匹配。
+
+`orderByDesc("create_time")`：倒序排序。
+
+`or()`：OR 连接条件。
+
+`in("id", ids)`：IN 查询。
